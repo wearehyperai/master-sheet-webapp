@@ -1,0 +1,17 @@
+.table-container {
+    position: relative;
+}
+
+.react-window-list {
+    overflow: auto !important;
+}
+
+.react-window-row {
+    display: table-row;
+}
+
+.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
