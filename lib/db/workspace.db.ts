@@ -3,14 +3,12 @@ import { StatusCodes } from "../constants/server_codes";
 import { RecordData } from "../model/csv_data";
 import prisma from '../services/prisma/prisma.service';
 
-export class UserUploads {
-    static insertUserUploads = async (data: RecordData[], userId: number, workspaceId: number) => {
+export class UserWorkSpace {
+    static createUserWorkSpace = async (userId: number) => {
         try {
-            const savedUser = await prisma.userUploads.create({
+            const savedUser = await prisma.userWorkspaces.create({
                 data: {
-                    data: JSON.stringify(data),
                     userId: userId,
-                    workspaceId: workspaceId,
                 },
             });
             return savedUser;
@@ -19,10 +17,10 @@ export class UserUploads {
         }
     }
 
-    static deleteUserUploads = async (userId: number) => {
+    static deleteUserWorkSpace = async (Id: string) => {
         try {
-            const result = await prisma.userUploads.deleteMany({
-                where: { userId: userId, workspaceId: 1 }
+            const result = await prisma.userWorkspaces.deleteMany({
+                where: { id: Id, }
             });
             return result;
         }
@@ -34,13 +32,13 @@ export class UserUploads {
         }
     }
 
-    static updateUserUploads = async (data: RecordData[], id: string) => {
+    static updateUserWorkSpace = async (data: RecordData[], id: string) => {
         try {
-            const updatedUser = await prisma.userUploads.update({
+            const updated = await prisma.userWorkspaces.update({
                 data: data,
                 where: { id: id }
             });
-            return updatedUser;
+            return updated;
         } catch (e) {
             if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
                 return StatusCodes.notFound;
@@ -49,9 +47,9 @@ export class UserUploads {
         }
     }
 
-    static getUserUploads = async (userId: number) => {
+    static getUserWorkSpace = async (userId: number) => {
         try {
-            const result = await prisma.userUploads.findFirst({
+            const result = await prisma.userWorkspaces.findFirst({
                 where: { userId: userId, }
             });
             if (!result) {

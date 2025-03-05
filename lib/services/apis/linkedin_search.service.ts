@@ -1,10 +1,10 @@
 import axios from "axios";
-import { CSVData } from "../../model/csv_data";
+import { RecordData } from "../../model/csv_data";
 
 const RATE_LIMIT: number = 50;
 const API_ENDPOINT: string = 'http://api.hyperpersonalization.ai/linkedin_search_dynamic';
 
-export const runLinkedInApi = async (data: CSVData[]) => {
+export const runLinkedInApi = async (data: RecordData[]) => {
     if (data.length < RATE_LIMIT) {
         const response = await axios.post(API_ENDPOINT, {
             headers: {

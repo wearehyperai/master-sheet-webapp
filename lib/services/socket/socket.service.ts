@@ -2,8 +2,8 @@ import { Server, Socket } from "socket.io";
 import { SESSION_EXP_TIME } from "../../constants/constants";
 import { SERVER_AUTHENTICATION, setServerSocket } from "../../constants/server_socket_id";
 import redisClient from "../redis/redis.service";
-import { runNameAPIResponse } from "../server/server_socket_listener";
-import { onNameAPICall, onUploadComplete, onUploadFile } from './socket_event_handler';
+import { runLinkedInSearchAPIResponse, runNameAPIResponse } from "../server/server_socket_listener";
+import { onLinkedInSearchAPICall, onNameAPICall, onUploadComplete, onUploadFile } from './socket_event_handler';
 import { ServerSocketReceiveEvents, SocketReceiveEvents } from "./socket_events";
 
 export const connectedSockets: Map<string, Socket> = new Map();
@@ -14,8 +14,12 @@ export const initializeSocket = (server: any) => {
             origin: "*",
             methods: ["GET", "POST"],
         },
+        maxHttpBufferSize: 2e8,
+        perMessageDeflate: {
+            threshold: 4096,
+        }
     });
-
+    console.log(`socket initialized`);
     io.on("connection", (socket: Socket) => {
         console.log("A user connected:", socket.id);
         connectedSockets.set(socket.id, socket);
@@ -24,6 +28,7 @@ export const initializeSocket = (server: any) => {
         socket.on(SocketReceiveEvents.uploadFile, (data) => onUploadFile(data, socket));
         socket.on(SocketReceiveEvents.uploadComplete, (data) => onUploadComplete(data, socket));
         socket.on(SocketReceiveEvents.nameAPICall, (data) => onNameAPICall(data, socket));
+        socket.on(SocketReceiveEvents.linkedInSearchAPICall, (data) => onLinkedInSearchAPICall(data, socket));
 
         socket.on(ServerSocketReceiveEvents.handshake, (data) => {
             if (data == SERVER_AUTHENTICATION) {
@@ -32,6 +37,7 @@ export const initializeSocket = (server: any) => {
             }
         });
         socket.on(ServerSocketReceiveEvents.nameAPIResponse, (data) => runNameAPIResponse(data));
+        socket.on(ServerSocketReceiveEvents.linkedInResponse, (data) => runLinkedInSearchAPIResponse(data));
 
         socket.on("disconnect", async () => {
             console.log("User disconnected:", socket.id);

@@ -20,17 +20,27 @@ app.use(bodyParser.json());
 app.use(
     bodyParser.urlencoded({
         extended: true,
+        limit: '500mb',
+        parameterLimit: 100000,
     })
 );
+app.use(express.json());
+app.get('/', (req, res) => {
+    res.send('Hey this is my API running 🥳')
+});
+
 app.use(router);
 
 initializeSocket(server);
 connectRedis();
-const port: number = 3000;
+
+const port: number = process.env.PORT ? parseInt(process.env.PORT) : 8686;
 server.listen(port, async () => {
     console.log(`Example app listening at http://127.0.0.1:${port}`);
 });
+
 export const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
 }
+export default app;

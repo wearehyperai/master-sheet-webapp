@@ -1,10 +1,12 @@
 
-export interface CSVData {
-    keyValuePairs: Map<String, String>;
+export interface RecordData {
+    keyValuePairs: Record<string, string>;
 }
 
 export interface CSVDataList {
-    data: CSVData[];
+    data: RecordData[];
     userId: number;
     socketId: string;
+    id?: number;
+    loadingData?: boolean;
 }
