@@ -32,9 +32,9 @@ export class WebSocketService extends EventEmitter {
         this.connectionCallbacks.forEach(cb => cb(connected));
     }
 
-    public connectToServer() {
+    public connectToServer(userId: string) {
         if (this.socket) return;
-
+        console.log('Connecting to server ' + userId);
         this.socket = io(serverURL, {
             autoConnect: true,
             transports: ['websocket'],
@@ -42,6 +42,9 @@ export class WebSocketService extends EventEmitter {
             reconnectionAttempts: 5,
             reconnectionDelay: 5000,
             timeout: 1200000,
+            query: {
+                userId: userId,
+            },
         });
 
         this.socket.on('connect', () => {
@@ -63,6 +66,12 @@ export class WebSocketService extends EventEmitter {
         this.socket.on("connect_error", (error) => {
             console.log("connect_error  " + error.message);
         });
+
+        this.socket.on(SocketReceiveEvents.userData, (data) => {
+            console.log(`SocketReceiveEvents.userData : ${data}`);
+            this.emit(SocketReceiveEvents.userData, data);
+        });
+
         this.socket.on(SocketReceiveEvents.uploadProgress, (data) => {
             this.emit(SocketReceiveEvents.uploadProgress, data);
         });

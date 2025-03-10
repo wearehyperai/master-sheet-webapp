@@ -1,4 +1,5 @@
 export enum SocketReceiveEvents {
+    userData = 'user_data',
     uploadProgress = 'upload_progress',
     uploadComplete = 'upload_complete',
     uploadFailed = 'upload_failed',

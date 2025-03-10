@@ -1,14 +1,35 @@
 'use client';
 
+import ApiEndpoints from '@/config/api_endpoints';
 import { useSocketStore } from '@/hooks/useSocketService';
 import { CSVDataList, RecordData } from '@/models/csv_data';
+import { IUser } from '@/models/user';
 import { SocketReceiveEvents } from '@/services/socket/socketEvents';
 import { socketService } from '@/services/socket/socketService';
 import { APIProviderIds, apiProviders } from '@/utils/api_provider_data';
+import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import ApiSidebar from './components/ApiSidebar';
 import DataTable from './components/DataTable';
 import ProgressIndicator from './components/ProgressIndicator';
+
+async function fetchUser(clerkId: string): Promise<IUser | null> {
+    try {
+        const res = await fetch(`${ApiEndpoints.BASE_URL}/api/user/${clerkId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        if (!res.ok) throw new Error("Failed to fetch user");
+        const data: IUser = await res.json();
+        return data;
+    } catch (error) {
+        console.log("Error fetching user:", error);
+        return null;
+    }
+}
+
 
 export default function DataPage() {
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -20,13 +41,22 @@ export default function DataPage() {
     const [recordData, setRecordData] = useState<RecordData[]>([]);
     const nameResponseData = useSocketStore((state) => state.eventData[SocketReceiveEvents.nameAPIResponse]);
     const linkedInResponseData = useSocketStore((state) => state.eventData[SocketReceiveEvents.linkedInResponse]);
+    const userData = useSocketStore((state) => state.eventData[SocketReceiveEvents.userData]);
     const [isLoading, setIsLoading] = useState(true);
     const clearEventData = useSocketStore((state) => state.clearEventData);
-
+    const { isLoaded, user } = useUser();
 
     useEffect(() => {
-        socketService.connectToServer();
-    }, []);
+        if (isLoaded && user) {
+            console.log('User data has been loaded:', user);
+            fetchUser(user.id).then(userData => {
+                if (userData) {
+                    console.log('User data fetched:', userData._id);
+                    socketService.connectToServer(userData._id);
+                }
+            });
+        }
+    }, [isLoaded, user]);
 
     useEffect(() => {
         setIsLoading(isParsing);
@@ -35,6 +65,17 @@ export default function DataPage() {
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
     };
+
+    useEffect(() => {
+        if (userData) {
+            const records: RecordData[] = JSON.parse(userData);
+            if (records.length > 0) {
+                setRecordData(records);
+                setIsLoading(false);
+                setColumns(Object.keys(records[0].keyValuePairs));
+            }
+        }
+    }, [userData]);
 
     useEffect(() => {
         if (parsedData) {
