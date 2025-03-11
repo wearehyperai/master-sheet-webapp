@@ -13,6 +13,11 @@ export class WebSocketService extends EventEmitter {
     private connectionCallbacks: Set<(connected: boolean) => void> = new Set();
 
     public chunks: string = '';
+    public userId: string = '';
+
+    public get IsConnected(): boolean {
+        return this.isConnected;
+    }
 
     public static getInstance(): WebSocketService {
         if (!WebSocketService.instance) {
@@ -34,6 +39,8 @@ export class WebSocketService extends EventEmitter {
 
     public connectToServer(userId: string) {
         if (this.socket) return;
+        this.userId = userId;
+
         console.log('Connecting to server ' + userId);
         this.socket = io(serverURL, {
             autoConnect: true,
@@ -43,13 +50,20 @@ export class WebSocketService extends EventEmitter {
             reconnectionDelay: 5000,
             timeout: 1200000,
             query: {
-                userId: userId,
+                userId: this.userId,
             },
         });
 
         this.socket.on('connect', () => {
             console.log('Socket connected:', this.socket?.id);
             this.updateConnectionState(true);
+        });
+
+        this.socket.on('reconnect_attempt', () => {
+            console.log('Reconnection attempt with userId:', this.userId);
+            if (this.socket) {
+                this.socket.io.opts.query = { userId: this.userId };
+            }
         });
 
         this.socket.on('disconnect', () => {
@@ -116,7 +130,7 @@ export class WebSocketService extends EventEmitter {
 
     public async sendFile(file: File) {
         if (!this.isConnected || !this.socket) {
-            throw new Error('Socket not connected');
+            return;
         }
         const reader = file.stream().getReader();
         let offset = 0;
@@ -158,16 +172,25 @@ export class WebSocketService extends EventEmitter {
 
     public async runNameAPI(recordData: RecordData[], responseFields: string[]) {
         if (!this.isConnected || !this.socket) {
-            throw new Error('Socket not connected');
+            return;
         }
         this.socket.emit(SocketSendEvents.nameAPICall, [recordData, responseFields]);
     }
 
     public async runLinkedInAPI(recordData: RecordData[], responseFields: string[]) {
         if (!this.isConnected || !this.socket) {
-            throw new Error('Socket not connected');
+            return;
         }
         this.socket.emit(SocketSendEvents.linkedInSearchAPICall, [recordData, responseFields]);
+    }
+
+    public async askForData(fileName: string) {
+        console.log('asking for data ' + fileName);
+        if (!this.isConnected || !this.socket) {
+            console.log('socket not connected ' + fileName);
+            return;
+        }
+        this.socket.emit(SocketSendEvents.askForData, { fileName: fileName });
     }
 }
 

@@ -7,6 +7,7 @@ class ApiEndpoints {
     static readonly GET_USER_BY_ID = (id: string) => `${this.SERVER_URL}/users/${id}`;
     static readonly UPDATE_USER = (id: string) => `${this.SERVER_URL}/users/${id}`;
     static readonly DELETE_USER = (id: string) => `${this.SERVER_URL}/users/${id}`;
+    static readonly GET_USER_UPLOADS = (id: string) => `${this.SERVER_URL}/user_uploads/${id}`;
 }
 
 export default ApiEndpoints;

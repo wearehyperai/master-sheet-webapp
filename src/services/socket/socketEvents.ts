@@ -14,5 +14,6 @@ export enum SocketSendEvents {
     uploadFile = 'upload_file',
     uploadComplete = 'upload_complete',
     nameAPICall = 'call_name_api',
-    linkedInSearchAPICall = 'call_linkedin_api'
+    linkedInSearchAPICall = 'call_linkedin_api',
+    askForData = 'ask_for_data'
 }

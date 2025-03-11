@@ -1,63 +1,24 @@
 
 'use client';
 import FileUpload from "@/components/file_upload_component";
-import ApiEndpoints from "@/config/api_endpoints";
+import StartWithBlank from "@/components/start_with_blank";
+import UserHeader from "@/components/user_header";
 import { IUser } from "@/models/user";
+import { IUserUploads } from "@/models/user_uploads";
 import { socketService } from "@/services/socket/socketService";
+import { fetchUser, fetchUserUploads, saveUser } from "@/services/userService";
 import { SignedIn, useUser } from "@clerk/nextjs";
-import { UserResource } from "@clerk/types";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
-async function saveUser(clerkUser: UserResource): Promise<IUser | null> {
-    try {
-        const user: IUser = {
-            _id: "",
-            clerkId: clerkUser.id ?? "",
-            username: clerkUser.username,
-            has_image: clerkUser.hasImage,
-            profile_image_url: clerkUser.imageUrl,
-            email: clerkUser.emailAddresses[0].emailAddress,
-            phone_number: clerkUser.phoneNumbers[0].phoneNumber,
-            first_name: clerkUser.firstName ?? "",
-            last_name: clerkUser.lastName ?? ""
-        }
-        const res = await fetch(ApiEndpoints.BASE_URL + "/api/user", {
-            method: "POST",
-            body: JSON.stringify(user),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        if (!res.ok) throw new Error("Failed to fetch user");
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.log("Error fetching user:", error);
-        return null;
-    }
-}
-
-async function fetchUser(clerkId: string): Promise<IUser | null> {
-    try {
-        const res = await fetch(`${ApiEndpoints.BASE_URL}/api/user/${clerkId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        if (!res.ok) throw new Error("Failed to fetch user");
-        const data: IUser = await res.json();
-        return data;
-    } catch (error) {
-        console.log("Error fetching user:", error);
-        return null;
-    }
-}
+import Card from "./components/card_components";
 
 export default function Dashboard() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const { isLoaded, user } = useUser();
+    const [dbuser, setUser] = useState<IUser | null>(null);
+    const [userUploads, setUserUploads] = useState<IUserUploads[]>([]);
+    const [uploadFetched, setUploadFetched] = useState<boolean>(false);
 
     useEffect(() => {
         if (isLoaded && user) {
@@ -78,16 +39,36 @@ export default function Dashboard() {
                         socketService.connectToServer(userData._id);
                         setUser(userData);
                     }
+
                 });
             }
         }
     }, [isLoaded, user]);
 
-    const [dbuser, setUser] = useState<IUser | null>(null);
+    useEffect(() => {
+        if (dbuser && !uploadFetched) {
+            fetchUserUploads(dbuser._id).then((uploads) => {
+                console.log("User uploads: ", JSON.stringify(uploads));
+                if (uploads) {
+                    setUserUploads(uploads);
+                }
+                setUploadFetched(true);
+            });
+        }
+    }, [uploadFetched, dbuser]);
 
     return (
         <SignedIn>
-            <FileUpload />
+            <div className="flex flex-col h-screen w-full">
+                <UserHeader />
+                <div className="flex items-center justify-center min-h-screen bg-gray-50">
+                    <FileUpload />
+                    {userUploads.length > 0 && <Card uploads={userUploads} onClickCard={function (index: number): void {
+                        router.push(`/data?file=${userUploads[index].fileName}`,);
+                    }} />}
+                    <StartWithBlank />
+                </div>
+            </div>
         </SignedIn>
     );
 }

@@ -1,35 +1,17 @@
 'use client';
 
-import ApiEndpoints from '@/config/api_endpoints';
 import { useSocketStore } from '@/hooks/useSocketService';
 import { CSVDataList, RecordData } from '@/models/csv_data';
-import { IUser } from '@/models/user';
 import { SocketReceiveEvents } from '@/services/socket/socketEvents';
 import { socketService } from '@/services/socket/socketService';
+import { fetchUser } from '@/services/userService';
 import { APIProviderIds, apiProviders } from '@/utils/api_provider_data';
 import { useUser } from '@clerk/nextjs';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ApiSidebar from './components/ApiSidebar';
 import DataTable from './components/DataTable';
 import ProgressIndicator from './components/ProgressIndicator';
-
-async function fetchUser(clerkId: string): Promise<IUser | null> {
-    try {
-        const res = await fetch(`${ApiEndpoints.BASE_URL}/api/user/${clerkId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        if (!res.ok) throw new Error("Failed to fetch user");
-        const data: IUser = await res.json();
-        return data;
-    } catch (error) {
-        console.log("Error fetching user:", error);
-        return null;
-    }
-}
-
 
 export default function DataPage() {
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -45,6 +27,7 @@ export default function DataPage() {
     const [isLoading, setIsLoading] = useState(true);
     const clearEventData = useSocketStore((state) => state.clearEventData);
     const { isLoaded, user } = useUser();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         if (isLoaded && user) {
@@ -53,6 +36,14 @@ export default function DataPage() {
                 if (userData) {
                     console.log('User data fetched:', userData._id);
                     socketService.connectToServer(userData._id);
+                    socketService.onConnectionChange((connected) => {
+                        const fileName = searchParams?.get("file");
+                        console.log("Socket onConnectionChange:", connected, fileName);
+                        if (connected && fileName && fileName.length > 0) {
+                            console.log("Socket connected, requesting data for file:", fileName);
+                            socketService.askForData(fileName);
+                        }
+                    });
                 }
             });
         }
