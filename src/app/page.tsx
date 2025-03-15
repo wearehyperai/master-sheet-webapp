@@ -28,7 +28,7 @@ export default function Home() {
       <SignedIn>
         <div className="flex flex-col h-screen w-full">
           <UserHeader />
-          <div className="flex items-center justify-center min-h-screen bg-gray-50">
+          <div className="flex items-center justify-center h-[700px] bg-gray-50">
             <Link href="/dashboard">
               <button className="px-4 py-2 rounded-full bg-[#131316] text-white text-sm font-semibold">
                 Dashboard
