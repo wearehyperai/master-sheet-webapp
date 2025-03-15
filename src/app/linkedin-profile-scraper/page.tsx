@@ -19,7 +19,9 @@ import {
   MapPin, 
   Link, 
   Key, 
-  Settings
+  Settings,
+  ArrowLeft,
+  Zap
 } from 'lucide-react';
 
 interface ScraperEndpoint {
@@ -50,14 +52,14 @@ interface ScraperEndpoint {
 }
 
 const LinkedInProfileScraper = () => {
-  const [currentTab, setCurrentTab] = useState('personData');
+  const [currentTab, setCurrentTab] = useState('');
   const [apiKey, setApiKey] = useState('');
-  const [showWelcome, setShowWelcome] = useState(true);
   const [inputValues, setInputValues] = useState<Record<string, string[]>>({});
   const [inputRowsCount, setInputRowsCount] = useState(1);
   const [startRow, setStartRow] = useState(1);
   const [outputStartColumn, setOutputStartColumn] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const [view, setView] = useState<'cards' | 'detail'>('cards');
 
   // Array of scraper endpoint configurations
   const scraperEndpoints: ScraperEndpoint[] = [
@@ -401,10 +403,6 @@ const LinkedInProfileScraper = () => {
     const savedApiKey = localStorage.getItem("linkedinScraperApiKey");
     if (savedApiKey) {
       setApiKey(savedApiKey);
-      // Validate after setting API key
-      setTimeout(() => {
-        validateForm();
-      }, 100);
     }
   }, []);
 
@@ -418,7 +416,6 @@ const LinkedInProfileScraper = () => {
           initialInputValues[param.fieldName] = Array(inputRowsCount).fill("");
         });
         setInputValues(initialInputValues);
-        setShowWelcome(false);
         
         // Validate form after a slight delay to allow state updates
         setTimeout(() => {
@@ -491,12 +488,6 @@ const LinkedInProfileScraper = () => {
   };
 
   const validateForm = () => {
-    // Check if we're showing welcome screen
-    if (showWelcome) {
-      setIsFormValid(false);
-      return;
-    }
-
     // Check API key
     if (!apiKey) {
       setIsFormValid(false);
@@ -528,7 +519,6 @@ const LinkedInProfileScraper = () => {
     });
 
     setIsFormValid(allRequiredInputsFilled);
-    console.log("Form validation result:", allRequiredInputsFilled);
   };
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -573,104 +563,119 @@ const LinkedInProfileScraper = () => {
     alert("Scraping started! Check console for details.");
   };
 
+  const handleCardClick = (tab: string) => {
+    setCurrentTab(tab);
+    setView('detail');
+  };
+
+  const handleBackToCards = () => {
+    setView('cards');
+  };
+
   const currentScraper = scraperEndpoints.find(endpoint => endpoint.tab === currentTab);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md flex flex-col">
+    <div className="min-h-screen bg-gray-50 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="p-4 border-b">
-          <h1 className="text-lg font-medium">LinkedIn Profile Scraper</h1>
+        <div className="py-6">
+          <h1 className="text-2xl font-semibold text-gray-800">LinkedIn Data Enrichment</h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Access LinkedIn data through our suite of specialized scrapers
+          </p>
         </div>
 
-        {/* Navigation */}
-        <div className="flex-1 overflow-y-auto">
-          {/* Scraping Options */}
-          <div className="border-b">
+        {/* Cards View */}
+        {view === 'cards' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {scraperEndpoints.map((endpoint) => (
-              <button
-                key={endpoint.id}
-                className={`w-full p-3 flex items-center text-sm hover:bg-gray-50 ${
-                  currentTab === endpoint.tab ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-                }`}
-                onClick={() => setCurrentTab(endpoint.tab)}
+              <div 
+                key={endpoint.id} 
+                className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 cursor-pointer" 
+                onClick={() => handleCardClick(endpoint.tab)}
               >
-                <div className="flex items-center space-x-2">
-                  {getIconForTab(endpoint.tab)}
-                  <span>{endpoint.title}</span>
+                <div className="p-6">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-3">
+                      {getIconForTab(endpoint.tab)}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-800">{endpoint.title}</h3>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-600 mb-4 text-sm min-h-[40px]">{endpoint.description}</p>
+                  
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <Zap className="text-yellow-500 mr-1" size={16} />
+                      <span className="text-sm font-medium text-gray-700">
+                        {endpoint.credits} {endpoint.credits > 1 ? 'Credits' : 'Credit'}
+                      </span>
+                    </div>
+                    <button 
+                      className="text-sm px-3 py-1.5 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors"
+                    >
+                      View
+                    </button>
+                  </div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-4">
-        {/* Content header with title */}
-        <div className="flex items-center mb-4">
-          <h2 className="text-lg font-medium">
-            {showWelcome ? "LinkedIn Profile Scraper" : currentScraper?.title}
-          </h2>
-        </div>
-
-        {/* Content area */}
-        <div className="space-y-4">
-          {/* Welcome content */}
-          {showWelcome && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-center p-6">
-                <User className="mx-auto text-blue-500" size={48} />
-                <h3 className="text-xl font-medium mt-4">
-                  Welcome to LinkedIn Profile Scraper
-                </h3>
-                <p className="text-gray-600 mt-2">
-                  Select a scraping option from the sidebar to get started
-                </p>
-              </div>
-
-              <div className="border-t pt-4">
-                <h4 className="font-medium mb-2">Quick Start Guide:</h4>
-                <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                  <li>Choose what data you want to scrape from the sidebar</li>
-                  <li>Enter your RapidAPI key</li>
-                  <li>Fill in the required input fields</li>
-                  <li>Add more input rows using the + button if needed</li>
-                  <li>
-                    Click the
-                    <span className="font-medium text-blue-500 mx-1">Start Scraping</span>
-                    button
-                  </li>
-                </ol>
+        {/* Detail View */}
+        {view === 'detail' && currentScraper && (
+          <div className="bg-white rounded-lg shadow-sm mb-6">
+            <div className="p-4 border-b flex items-center">
+              <button 
+                onClick={handleBackToCards}
+                className="mr-3 p-1.5 rounded-full hover:bg-gray-100"
+              >
+                <ArrowLeft size={18} />
+              </button>
+              <div className="flex items-center">
+                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-2">
+                  {getIconForTab(currentTab)}
+                </div>
+                <h2 className="text-lg font-medium">{currentScraper.title}</h2>
               </div>
             </div>
-          )}
+            
+            <form onSubmit={handleStartScraping} className="p-6 space-y-6">
+              {/* Scraper Info Section */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex justify-between mb-2">
+                  <p className="text-gray-700">{currentScraper.description}</p>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {currentScraper.credits} {currentScraper.credits > 1 ? 'Credits' : 'Credit'}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 italic">{currentScraper.details.usage}</p>
+              </div>
 
-          {/* Scraper Content */}
-          {!showWelcome && currentScraper && (
-            <form onSubmit={handleStartScraping} className="space-y-4">
               {/* API Key Section */}
-              <div className="bg-white rounded-lg shadow-sm p-4">
-                <div className="flex items-center space-x-2 mb-4">
+              <div className="border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-3">
                   <Key className="text-yellow-500" size={18} />
-                  <h2 className="text-lg font-medium">API Configuration</h2>
+                  <h3 className="text-base font-medium">API Configuration</h3>
                 </div>
 
-                <div className="mb-4">
-                                      <div className="flex items-center space-x-2 mb-1">
+                <div>
+                  <div className="flex items-center space-x-2 mb-1">
                     <label className="block text-sm font-medium text-gray-700">
                       RapidAPI Key
                     </label>
                     <div title="Your RapidAPI key for LinkedIn Bulk Data Scraper">
                       <Info className="text-gray-400 cursor-help" size={16} />
                     </div>
-                    <span className="text-gray-400 text-xs">Required</span>
+                    <span className="text-red-500 text-xs">Required</span>
                   </div>
                   <input
                     type="text"
                     placeholder="Enter your RapidAPI key"
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded focus:ring-emerald-500 focus:border-emerald-500"
                     required
                     value={apiKey}
                     onChange={handleApiKeyChange}
@@ -678,35 +683,15 @@ const LinkedInProfileScraper = () => {
                 </div>
               </div>
 
-              {/* Scraper Info Section */}
-              <div className="bg-white rounded-lg shadow-sm p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    {getIconForTab(currentTab)}
-                    <h2 className="text-lg font-medium">{currentScraper.title}</h2>
-                  </div>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {currentScraper.credits} {currentScraper.credits > 1 ? 'Credits' : 'Credit'}
-                  </span>
-                </div>
-
-                <p className="text-gray-600 mb-4">{currentScraper.description}</p>
-
-                <div className="border-t pt-3 mt-3">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Usage:</h3>
-                  <p className="text-sm text-gray-600">{currentScraper.details.usage}</p>
-                </div>
-              </div>
-
               {/* Input Parameters Section */}
-              <div className="bg-white rounded-lg shadow-sm p-4">
+              <div className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-4">
-                  <MapPin className="text-indigo-500" size={18} />
-                  <h2 className="text-lg font-medium">Input Parameters</h2>
+                  <MapPin className="text-emerald-500" size={18} />
+                  <h3 className="text-base font-medium">Input Parameters</h3>
                 </div>
 
                 {currentScraper.details.inputParams.map((param) => (
-                  <div key={param.fieldName} className="mb-6">
+                  <div key={param.fieldName} className="mb-5">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         <label className="block text-sm font-medium text-gray-700">
@@ -716,12 +701,12 @@ const LinkedInProfileScraper = () => {
                           <Info className="text-gray-400 cursor-help" size={16} />
                         </div>
                         {param.required && (
-                          <span className="text-gray-400 text-xs">Required</span>
+                          <span className="text-red-500 text-xs">Required</span>
                         )}
                       </div>
                       <button
                         type="button"
-                        className="text-blue-500 hover:text-blue-700 flex items-center space-x-1"
+                        className="text-emerald-500 hover:text-emerald-700 flex items-center space-x-1 text-sm"
                         onClick={addInputRow}
                       >
                         <PlusCircle size={16} />
@@ -734,8 +719,8 @@ const LinkedInProfileScraper = () => {
                         <div key={index} className="flex items-center space-x-2">
                           <input
                             type="text"
-                            placeholder="Enter value"
-                            className="flex-1 p-2 border rounded"
+                            placeholder={`Enter ${param.name}`}
+                            className="flex-1 p-2 border rounded focus:ring-emerald-500 focus:border-emerald-500"
                             value={inputValues[param.fieldName]?.[index] || ""}
                             onChange={(e) => updateInputValue(param.fieldName, index, e.target.value)}
                             required={param.required}
@@ -743,7 +728,7 @@ const LinkedInProfileScraper = () => {
                           {index > 0 && (
                             <button
                               type="button"
-                              className="text-red-500 hover:text-red-700"
+                              className="text-red-500 hover:text-red-700 p-1"
                               onClick={() => removeInputRow(index)}
                             >
                               <X size={18} />
@@ -757,10 +742,10 @@ const LinkedInProfileScraper = () => {
               </div>
 
               {/* Configuration Section */}
-              <div className="bg-white rounded-lg shadow-sm p-4">
+              <div className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-4">
                   <Settings className="text-gray-500" size={18} />
-                  <h2 className="text-lg font-medium">Configuration</h2>
+                  <h3 className="text-base font-medium">Sheet Configuration</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -777,11 +762,11 @@ const LinkedInProfileScraper = () => {
                         validateForm();
                       }}
                       placeholder="Enter start row"
-                      className="w-full p-2 border rounded"
+                      className="w-full p-2 border rounded focus:ring-emerald-500 focus:border-emerald-500"
                       required
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      End row: {startRow + inputRowsCount - 1} (automatically calculated based on input rows)
+                      End row: {startRow + inputRowsCount - 1}
                     </p>
                   </div>
 
@@ -800,7 +785,7 @@ const LinkedInProfileScraper = () => {
                         validateForm();
                       }}
                       placeholder="Column letter (A-Z)"
-                      className="w-full p-2 border rounded"
+                      className="w-full p-2 border rounded focus:ring-emerald-500 focus:border-emerald-500"
                       required
                     />
                   </div>
@@ -808,10 +793,10 @@ const LinkedInProfileScraper = () => {
               </div>
 
               {/* Submit Button */}
-              <div className="flex justify-end mt-4">
+              <div className="flex justify-end mt-6">
                 <button
                   type="submit"
-                  className={`px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2`}
+                  className="px-6 py-2.5 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                   disabled={!isFormValid}
                 >
                   <Play size={16} />
@@ -819,8 +804,8 @@ const LinkedInProfileScraper = () => {
                 </button>
               </div>
             </form>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
