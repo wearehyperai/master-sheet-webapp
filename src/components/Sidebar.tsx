@@ -20,7 +20,9 @@ import {
   User,
   ThumbsUp,
   Search as SearchIcon,
-  Beaker
+  Beaker,
+  Combine,
+  Workflow
 } from 'lucide-react';
 
 interface SidebarItemProps {
@@ -151,6 +153,22 @@ const Sidebar: React.FC = () => {
   
   // Data structure for all sidebar items with unique IDs
   const sidebarStructure: CategoryData[] = [
+    {
+      id: 'my-workflows',
+      title: 'MY WORKFLOWS',
+      icon: <Workflow size={18} className="text-emerald-500" />,
+      items: [
+        { id: 'my-all-workflow', icon: <Workflow size={16} className="text-emerald-500" />, title: 'My workflows', path: '/my-workflows' }
+      ]
+    },
+    {
+      id: 'api-kit',
+      title: 'API KIT',
+      icon: <Combine size={18} className="text-emerald-500" />,
+      items: [
+        { id: 'my-api-kit', icon: <Combine size={16} className="text-emerald-500" />, title: 'API Kit', path: '/api-kit' }
+      ]
+    },
     {
       id: 'ai-tools',
       title: 'AI TOOLS',
@@ -300,6 +318,42 @@ const Sidebar: React.FC = () => {
 
       {/* Sidebar Content */}
       <div className="px-4 py-3 overflow-y-auto flex-grow custom-scrollbar">
+              {/* AI Tools Section */}
+              <SidebarCategory 
+          id="my-workflows"
+          title="MY WORKFLOWS" 
+          icon={<Workflow size={18} className="text-emerald-500" />}
+          isVisible={filteredSections['my-workflows'] ?? true}
+        >
+          {sidebarStructure[0].items?.map(item => (
+            <SidebarItem
+              key={item.id}
+              icon={item.icon}
+              title={item.title}
+              path={item.path}
+              isActive={pathname === item.path}
+            />
+          ))}
+        </SidebarCategory>
+
+                {/* AI Tools Section */}
+                <SidebarCategory 
+          id="api-kit"
+          title="API KIT" 
+          icon={<Combine size={18} className="text-emerald-500" />}
+          isVisible={filteredSections['api-kit'] ?? true}
+        >
+          {sidebarStructure[1].items?.map(item => (
+            <SidebarItem
+              key={item.id}
+              icon={item.icon}
+              title={item.title}
+              path={item.path}
+              isActive={pathname === item.path}
+            />
+          ))}
+        </SidebarCategory>
+
         {/* AI Tools Section */}
         <SidebarCategory 
           id="ai-tools"
@@ -307,7 +361,7 @@ const Sidebar: React.FC = () => {
           icon={<Brain size={18} className="text-emerald-500" />}
           isVisible={filteredSections['ai-tools'] ?? true}
         >
-          {sidebarStructure[0].items?.map(item => (
+          {sidebarStructure[2].items?.map(item => (
             <SidebarItem
               key={item.id}
               icon={item.icon}
@@ -325,7 +379,7 @@ const Sidebar: React.FC = () => {
           icon={<Database size={18} className="text-emerald-500" />}
           isVisible={filteredSections['data-bank'] ?? true}
         >
-          {sidebarStructure[1].items?.map(item => (
+          {sidebarStructure[3].items?.map(item => (
             <SidebarItem
               key={item.id}
               icon={item.icon}
@@ -343,7 +397,7 @@ const Sidebar: React.FC = () => {
           icon={<Zap size={18} className="text-emerald-500" />}
           isVisible={filteredSections['data-enrichment'] ?? true}
         >
-          {sidebarStructure[2].items?.map(item => (
+          {sidebarStructure[4].items?.map(item => (
             <SidebarItem
               key={item.id}
               icon={item.icon}
@@ -367,7 +421,7 @@ const Sidebar: React.FC = () => {
             title="Google Scrapers"
             isVisible={filteredSections['google-scrapers'] ?? true}
           >
-            {sidebarStructure[3].nested?.[0].items.map(item => (
+            {sidebarStructure[5].nested?.[0].items.map(item => (
               <Link 
                 key={item.id}
                 href={item.path} 
@@ -389,7 +443,7 @@ const Sidebar: React.FC = () => {
             title="LinkedIn Scrapers"
             isVisible={filteredSections['linkedin-scrapers'] ?? true}
           >
-            {sidebarStructure[3].nested?.[1].items.map(item => (
+            {sidebarStructure[5].nested?.[1].items.map(item => (
               <Link 
                 key={item.id}
                 href={item.path} 
