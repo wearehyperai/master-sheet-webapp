@@ -81,8 +81,8 @@ const BuildTab: React.FC<BuildTabProps> = ({
           <div 
             key={node.node_id}
             className={`p-4 mb-4 rounded-md transition-all ${getNodeStatusClass(index)}`}
-            onClick={() => isNodeSelectable(index) ? setCurrentNode(index) : null}
-            style={{ cursor: isNodeSelectable(index) ? 'pointer' : 'not-allowed' }}
+            // Remove onClick or make it non-interactive
+            style={{ cursor: isNodeSelectable(index) ? 'default' : 'not-allowed' }}
           >
             <div className="flex items-center mb-3">
               <div className="bg-white p-1.5 rounded mr-3 text-emerald-500 shadow-sm">

@@ -22,7 +22,7 @@ const WorkflowStarter: React.FC<WorkflowStarterProps> = ({
   const isScraperMode = config.isScraperMode || false;
   const initialScraperId = config.initialScraperId || null;
   const allowFileUpload = config.allowFileUpload || false;
-  const showSheetConfig = config.showSheetConfig !== undefined ? config.showSheetConfig : true;
+  // const showSheetConfig = config.showSheetConfig !== undefined ? config.showSheetConfig : true;
   
   // Main tabs
   const [activeMainTab, setActiveMainTab] = useState<'api' | 'ui'>('api');
