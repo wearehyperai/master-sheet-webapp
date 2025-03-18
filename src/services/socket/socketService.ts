@@ -145,7 +145,6 @@ export class WebSocketService extends EventEmitter {
                 while (start < value.length) {
                     const end = (start + CHUNK_SIZE) > value.length ? value.length : start + CHUNK_SIZE;
                     const sliced = value.slice(start, end);
-
                     this.socket!.emit(SocketSendEvents.uploadFile, {
                         'fileName': file.name,
                         'chunk': sliced,
@@ -170,27 +169,28 @@ export class WebSocketService extends EventEmitter {
         this.socket.emit(SocketSendEvents.uploadComplete, { 'fileName': file.name });
     }
 
-    public async runNameAPI(recordData: RecordData[], responseFields: string[]) {
+    public async runNameAPI(recordData: RecordData[], responseFields: string[], userUploadsId: string) {
         if (!this.isConnected || !this.socket) {
             return;
         }
-        this.socket.emit(SocketSendEvents.nameAPICall, [recordData, responseFields]);
+        this.socket.emit(SocketSendEvents.nameAPICall, [recordData, responseFields, userUploadsId]);
     }
 
-    public async runLinkedInAPI(recordData: RecordData[], responseFields: string[]) {
+    public async runLinkedInAPI(recordData: RecordData[], responseFields: string[], userUploadsId: string) {
         if (!this.isConnected || !this.socket) {
             return;
         }
-        this.socket.emit(SocketSendEvents.linkedInSearchAPICall, [recordData, responseFields]);
+
+        this.socket.emit(SocketSendEvents.linkedInSearchAPICall, [recordData, responseFields, userUploadsId]);
     }
 
-    public async askForData(fileName: string) {
-        console.log('asking for data ' + fileName);
+    public async askForData(uploadId: string) {
+        console.log('asking for data ' + uploadId);
         if (!this.isConnected || !this.socket) {
-            console.log('socket not connected ' + fileName);
+            console.log('socket not connected ' + uploadId);
             return;
         }
-        this.socket.emit(SocketSendEvents.askForData, { fileName: fileName });
+        this.socket.emit(SocketSendEvents.askForData, { uploadId: uploadId });
     }
 }
 

@@ -1,12 +1,14 @@
 'use client';
 
+import userRepo from '@/data/user_repo';
+import userUploadsRepository from '@/data/user_upload_repos';
 import { useSocketStore } from '@/hooks/useSocketService';
 import { CSVDataList, RecordData } from '@/models/csv_data';
+import { IUser } from '@/models/user';
+import { IUserUploads } from '@/models/user_uploads';
 import { SocketReceiveEvents } from '@/services/socket/socketEvents';
 import { socketService } from '@/services/socket/socketService';
-import { fetchUser } from '@/services/userService';
 import { APIProviderIds, apiProviders } from '@/utils/api_provider_data';
-import { useUser } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ApiSidebar from './components/ApiSidebar';
@@ -26,28 +28,56 @@ export default function DataPage() {
     const userData = useSocketStore((state) => state.eventData[SocketReceiveEvents.userData]);
     const [isLoading, setIsLoading] = useState(true);
     const clearEventData = useSocketStore((state) => state.clearEventData);
-    const { isLoaded, user } = useUser();
+    const [userUpload, setUserUpload] = useState<IUserUploads[]>([]);
+    const [userDetails, setUserDetails] = useState<IUser | null>(null);
+    const [uploadId, setUploadId] = useState<string>('');
     const searchParams = useSearchParams();
 
+
     useEffect(() => {
-        if (isLoaded && user) {
+        if (!userDetails && userRepo.user) {
+            setUserDetails(userRepo.user);
+            socketService.connectToServer(userRepo.user._id);
+            socketService.onConnectionChange((connected) => {
+                const uploadId = searchParams?.get("id");
+                const source = searchParams?.get("source");
+                console.log("Socket onConnectionChange:", connected, uploadId);
+                if (connected && uploadId && uploadId.length > 0) {
+                    console.log("Socket connected, requesting data for file:", uploadId);
+                    if (source != 'upload') {
+                        socketService.askForData(uploadId);
+                    }
+                    setUploadId(uploadId);
+                }
+            });
+        }
+        /* if (isLoaded && user) {
             console.log('User data has been loaded:', user);
+
             fetchUser(user.id).then(userData => {
                 if (userData) {
                     console.log('User data fetched:', userData._id);
                     socketService.connectToServer(userData._id);
                     socketService.onConnectionChange((connected) => {
                         const fileName = searchParams?.get("file");
+                        const source = searchParams?.get("source");
                         console.log("Socket onConnectionChange:", connected, fileName);
-                        if (connected && fileName && fileName.length > 0) {
+                        if (connected && fileName && fileName.length > 0 && source != 'upload') {
                             console.log("Socket connected, requesting data for file:", fileName);
                             socketService.askForData(fileName);
                         }
                     });
                 }
             });
+        } */
+    }, [userDetails, userRepo.user]);
+
+
+    useEffect(() => {
+        if (userUpload.length == 0 && userUploadsRepository.userUploads.length > 0) {
+            setUserUpload(userUploadsRepository.userUploads);
         }
-    }, [isLoaded, user]);
+    }, [userUpload, userUploadsRepository.userUploads]);
 
     useEffect(() => {
         setIsLoading(isParsing);
@@ -59,7 +89,13 @@ export default function DataPage() {
 
     useEffect(() => {
         if (userData) {
-            const records: RecordData[] = JSON.parse(userData);
+            const data = JSON.parse(userData);
+            if (!data) return;
+            if (data.hasOwnProperty('status') && data.status == 'Loading') {
+                setIsLoading(true);
+                return;
+            }
+            const records: RecordData[] = data;
             if (records.length > 0) {
                 setRecordData(records);
                 setIsLoading(false);
@@ -187,11 +223,12 @@ export default function DataPage() {
             return { keyValuePairs };
         });
         setProcessedData(0);
+        console.log("runNameAPI uploadId ", uploadId);
         if (provider.id == APIProviderIds.nameAPI) {
-            socketService.runNameAPI(requestData, responseFields, '');
+            socketService.runNameAPI(requestData, responseFields, uploadId);
         }
         else if (provider.id == APIProviderIds.linkedinAPI) {
-            socketService.runLinkedInAPI(requestData, responseFields);
+            socketService.runLinkedInAPI(requestData, responseFields, uploadId);
         }
     };
 

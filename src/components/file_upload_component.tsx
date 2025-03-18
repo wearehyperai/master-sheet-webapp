@@ -1,4 +1,5 @@
 "use client"
+import userUploadsRepository from '@/data/user_upload_repos';
 import { useSocketStore } from '@/hooks/useSocketService';
 import { SocketReceiveEvents } from '@/services/socket/socketEvents';
 import { socketService } from '@/services/socket/socketService';
@@ -7,7 +8,11 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import ProgressBar from './progress_bar';
 
-export default function FileUpload() {
+interface FileUploadProps {
+    userId: string;
+}
+
+export default function FileUpload({ userId }: FileUploadProps) {
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [file, setFile] = useState<File>();
@@ -19,9 +24,11 @@ export default function FileUpload() {
 
     useEffect(() => {
         if (uploadCompleteData) {
-            console.log("Navigating to /data ");
+            userUploadsRepository.fetchUserUploads(userId, true);
+            const id = uploadCompleteData;
+            console.log("Navigating to /data ", id);
+            router.push(`/data?file=${id}`);
             setEventData(SocketReceiveEvents.uploadComplete, null);
-            router.push("/data");
         }
     }, [uploadCompleteData]);
 
