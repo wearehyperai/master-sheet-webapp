@@ -4,12 +4,12 @@ import { create } from "zustand";
 
 interface SocketState {
     clearEventData: (event: SocketReceiveEvents,) => void;
-    eventData: Record<SocketReceiveEvents, any>;
-    setEventData: (event: SocketReceiveEvents, data: any) => void;
+    eventData: Record<SocketReceiveEvents, string>;
+    setEventData: (event: SocketReceiveEvents, data: string) => void;
 }
 
 export const useSocketStore = create<SocketState>((set) => ({
-    eventData: {} as Record<SocketReceiveEvents, any>,
+    eventData: {} as Record<SocketReceiveEvents, string>,
     clearEventData: (event) =>
         set((state) => {
             const newEventData = { ...state.eventData };

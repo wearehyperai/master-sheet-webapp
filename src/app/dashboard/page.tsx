@@ -67,7 +67,7 @@ export default function Dashboard() {
             <div className="flex flex-col h-screen w-full">
                 <UserHeader />
                 <div className="flex items-center justify-center min-h-screen bg-gray-50">
-                    <FileUpload userId={dbuser?._id ?? ''} isUploading={isUploading} setIsUploading={setIsUploading} progressData={progressData} />
+                    <FileUpload userId={dbuser?._id ?? ''} isUploading={isUploading} setIsUploading={setIsUploading} progressData={progressData != undefined && progressData.length > 0 ? JSON.parse(progressData) : ''} />
                     {userUploads.length > 0 && !isUploading && <Card uploads={userUploads} onClickCard={function (index: number): void {
                         router.push(`/data?id=${userUploads[index]._id}`,);
                     }} />}

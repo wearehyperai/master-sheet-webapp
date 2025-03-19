@@ -34,7 +34,7 @@ export default function FileUpload({ userId, isUploading, setIsUploading, progre
             const id = uploadCompleteData;
             console.log("Navigating to /data ", id);
             router.push(`/data?id=${id}&source=upload`);
-            setEventData(SocketReceiveEvents.uploadComplete, null);
+            setEventData(SocketReceiveEvents.uploadComplete, '');
         }
     }, [uploadCompleteData, router, setEventData, userId]);
 

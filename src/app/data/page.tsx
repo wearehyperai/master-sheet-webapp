@@ -45,7 +45,7 @@ export default function DataPage() {
             console.log('params ', params.toString());
             router.replace(`${pathname}?${params.toString()}`, { scroll: false });
         }
-    }, [userDetails, pathname, searchParams, router]);  
+    }, [userDetails, pathname, searchParams, router]);
 
     useEffect(() => {
         function fetchData() {
@@ -94,7 +94,7 @@ export default function DataPage() {
     }, [userUpload]);
 
     useEffect(() => {
-        setIsLoading(isParsing);
+        setIsLoading(isParsing != undefined && isParsing.length > 0);
     }, [isParsing])
 
     const toggleSidebar = () => {
@@ -128,8 +128,9 @@ export default function DataPage() {
             if (responseData.length > 0) {
                 setColumns(Object.keys(responseData[0].keyValuePairs));
             }
+            clearEventData(SocketReceiveEvents.parsedDataCompleted);
         }
-    }, [parsedData, recordData]);
+    }, [parsedData, recordData, clearEventData]);
 
     useEffect(() => {
         if (nameResponseData) {
