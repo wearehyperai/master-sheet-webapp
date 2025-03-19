@@ -17,8 +17,10 @@ export async function GET(req: NextRequest) {
         else {
             return NextResponse.json({ error: "User not fetched" }, { status: 400 });
         }
-    } catch (error: any) {
-        console.log("GET request error " + error.message);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        console.log("GET request error " + (error instanceof Error ? error.message : String(error)));
+        return NextResponse.json({ 
+            error: error instanceof Error ? error.message : "An unknown error occurred" 
+        }, { status: 500 });
     }
 }

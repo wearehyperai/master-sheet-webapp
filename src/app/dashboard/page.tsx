@@ -48,7 +48,7 @@ export default function Dashboard() {
                 });
             }
         }
-    }, [isLoaded, user]);
+    }, [isLoaded, user, searchParams]);
 
     useEffect(() => {
         if (dbuser == null || uploadFetched)
