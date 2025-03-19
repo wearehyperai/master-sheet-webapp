@@ -188,7 +188,7 @@ export default function DataPage() {
         });
         setProcessedData(0);
         if (provider.id == APIProviderIds.nameAPI) {
-            socketService.runNameAPI(requestData, responseFields, '');
+            socketService.runNameAPI(requestData, responseFields);
         }
         else if (provider.id == APIProviderIds.linkedinAPI) {
             socketService.runLinkedInAPI(requestData, responseFields);

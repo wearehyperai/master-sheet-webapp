@@ -41,7 +41,7 @@ const ApiSidebar: React.FC<ApiSidebarProps> = ({
     const [selectedApi, setSelectedApi] = useState<ApiDefinition | null>(null);
     const [selectedColumns, setSelectedColumns] = useState<Record<string, string>>({});
     const [selectedResponseFields, setSelectedResponseFields] = useState<Record<string, boolean>>({});
-    const [canRunApi, setCanRunApi] = useState<boolean>(false);
+    // const [canRunApi, setCanRunApi] = useState<boolean>(false);
 
     const selectApi = (api: ApiDefinition) => {
         setSelectedApi(api);
@@ -80,7 +80,7 @@ const ApiSidebar: React.FC<ApiSidebarProps> = ({
 
         // Filter selected response fields to get only the ones that are checked
         const enabledResponseFields = Object.entries(selectedResponseFields)
-            .filter(([_, isSelected]) => isSelected)
+            .filter(([, isSelected]) => isSelected)
             .map(([fieldName]) => fieldName);
 
         onRunApi(selectedApi.id, selectedColumns, enabledResponseFields);
