@@ -39,7 +39,7 @@ const ApiDocumentation: React.FC<ApiDocumentationProps> = ({ apiInfo, copied, on
   };
   
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white rounded-lg shadow p-6 !h-[calc(100vh-180px)] !overflow-y-auto">
       <h2 className="text-xl font-bold mb-4">{apiInfo.title}</h2>
       <p className="text-gray-600 mb-6">{apiInfo.description}</p>
       

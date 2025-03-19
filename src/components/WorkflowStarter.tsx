@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Code, Terminal } from 'lucide-react';
+import { ArrowLeft, Code, Terminal } from 'lucide-react';
 import { ApiInfo, WorkflowNode, WorkflowConfig } from '@/types/workflow';
 import BuildTab from './BuildTab';
 import RunTab from './RunTab';
@@ -10,12 +10,14 @@ import ApiDocumentation from './ApiDocTab';
 interface WorkflowStarterProps {
   apiInfo: ApiInfo;
   nodes: WorkflowNode[];
+  handleBackClick?: () => void;
   config?: WorkflowConfig;
 }
 
 const WorkflowStarter: React.FC<WorkflowStarterProps> = ({ 
   apiInfo, 
   nodes, 
+  handleBackClick,
   config = {} 
 }) => {
   // Config defaults
@@ -182,10 +184,17 @@ const WorkflowStarter: React.FC<WorkflowStarterProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 bg-gray-100">
+    <div className="max-w-6xl mx-auto p-4 bg-gray-100 h-[calc(100vh-82px)] overflow-y-auto">
       {/* Main tabs */}
       <div className="mb-6 border-b border-gray-200">
         <div className="flex">
+          {/* Back button */}
+              <button
+                onClick={handleBackClick}
+                className="flex items-center text-blue-500 hover:underline"
+              >
+                <ArrowLeft className="h-4 w-4 mr-1" />
+              </button>
           <button 
             className={`px-4 py-2 font-medium text-sm ${
               activeMainTab === 'api' 
