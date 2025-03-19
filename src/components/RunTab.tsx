@@ -111,7 +111,7 @@ const RunTab: React.FC<RunTabProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white rounded-lg shadow p-6 h-[calc(100vh-242px)] overflow-y-auto">
       <h2 className="text-lg font-bold mb-4">Run Your Workflow</h2>
       <p className="text-gray-600 text-sm mb-6">
         Provide inputs for each step to execute your workflow.

@@ -25,16 +25,8 @@ const LinkedInProfileScraper = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="py-6">
-          <h1 className="text-2xl font-semibold text-gray-800">LinkedIn Data Enrichment</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Access LinkedIn data through our suite of specialized scrapers
-          </p>
-        </div>
-
-        {view === 'cards' ? (
+      <div className="max-w-7xl mx-auto px-4 pt-8 sm:px-6 lg:px-8">
+       {view === 'cards' ? (
           <ScraperCards
             scraperEndpoints={scraperEndpoints} 
             onScraperClick={handleScraperClick} 

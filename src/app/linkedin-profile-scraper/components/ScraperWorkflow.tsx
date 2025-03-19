@@ -20,7 +20,7 @@ const ScraperWorkflow: React.FC<ScraperWorkflowProps> = ({
   const workflowNodes = createScraperWorkflowNodes([scraper]);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm mb-6">
+    <div className="bg-white rounded-lg shadow-sm h-[calc(100vh-64px)] overflow-y-auto">
       {/* Header with back button */}
       <div className="p-4 border-b flex items-center">
         <button 
