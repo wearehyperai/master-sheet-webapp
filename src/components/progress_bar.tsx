@@ -41,7 +41,7 @@ export default function ProgressBar({
         } else {
             setDisplayProgress(progress);
         }
-    }, [progress, animate]);
+    }, [progress, animate, displayProgress]);
 
     const receivedMB = getSizeAnnonation(received);
     const totalSizeMB = getSizeAnnonation(totalSize);

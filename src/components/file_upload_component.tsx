@@ -8,11 +8,16 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import ProgressBar from './progress_bar';
 
+interface ProgressDataType {
+    progress: number;
+    receivedSize: number;
+}
+
 interface FileUploadProps {
     userId: string;
     isUploading: boolean;
     setIsUploading: (isUploading: boolean) => void;
-    progressData: any;
+    progressData: ProgressDataType | null;
 }
 
 export default function FileUpload({ userId, isUploading, setIsUploading, progressData }: FileUploadProps) {
@@ -31,13 +36,13 @@ export default function FileUpload({ userId, isUploading, setIsUploading, progre
             router.push(`/data?id=${id}&source=upload`);
             setEventData(SocketReceiveEvents.uploadComplete, null);
         }
-    }, [uploadCompleteData]);
+    }, [uploadCompleteData, router, setEventData, userId]);
 
     useEffect(() => {
         socketService.onConnectionChange((connected) => {
             setIsSocketConnected(connected);
         });
-    },);
+    }, []);
 
     const handleDrag = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -72,7 +77,7 @@ export default function FileUpload({ userId, isUploading, setIsUploading, progre
             setIsUploading(false);
             console.error('Error sending file:', error);
         }
-    }, [isSocketConnected]);
+    }, [isSocketConnected, setIsUploading]);
 
     const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
@@ -88,7 +93,7 @@ export default function FileUpload({ userId, isUploading, setIsUploading, progre
             setIsUploading(false);
             console.error('Error sending file:', error);
         }
-    }, [isSocketConnected]);
+    }, [isSocketConnected, setIsUploading]);
 
     if (isUploading && progressData) {
         return (

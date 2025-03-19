@@ -45,7 +45,7 @@ export default function DataPage() {
             console.log('params ', params.toString());
             router.replace(`${pathname}?${params.toString()}`, { scroll: false });
         }
-    }, [userDetails]);
+    }, [userDetails, pathname, searchParams, router]);  
 
     useEffect(() => {
         function fetchData() {
@@ -84,14 +84,14 @@ export default function DataPage() {
                 }
             });
         }
-    }, [userDetails, userRepo.user, isLoaded, user]);
+    }, [userDetails, searchParams, isLoaded, user]);
 
 
     useEffect(() => {
         if (userUpload.length == 0 && userUploadsRepository.userUploads.length > 0) {
             setUserUpload(userUploadsRepository.userUploads);
         }
-    }, [userUpload, userUploadsRepository.userUploads]);
+    }, [userUpload]);
 
     useEffect(() => {
         setIsLoading(isParsing);
@@ -129,7 +129,7 @@ export default function DataPage() {
                 setColumns(Object.keys(responseData[0].keyValuePairs));
             }
         }
-    }, [parsedData]);
+    }, [parsedData, recordData]);
 
     useEffect(() => {
         if (nameResponseData) {
@@ -170,7 +170,7 @@ export default function DataPage() {
                 return updatedData;
             });
         }
-    }, [nameResponseData, clearEventData]);
+    }, [nameResponseData, clearEventData, processedData, responseFields]);
 
     useEffect(() => {
         if (linkedInResponseData) {

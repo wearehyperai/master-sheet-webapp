@@ -293,6 +293,7 @@ const Sidebar: React.FC = () => {
     });
     
     setFilteredSections(visible);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
   
   return (

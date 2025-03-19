@@ -60,7 +60,7 @@ export default function Dashboard() {
             }
             setUploadFetched(true);
         });
-    }, [userUploadsRepository.userUploads, uploadFetched, dbuser]);
+    }, [uploadFetched, dbuser]);
 
     return (
         <SignedIn>

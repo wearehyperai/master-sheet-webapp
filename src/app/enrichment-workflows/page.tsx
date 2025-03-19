@@ -366,7 +366,7 @@ const EnrichmentWorkflows = () => {
   // Initialize state for custom workflow options
   useEffect(() => {
     setSelectedOptions(Array(customWorkflowNodes.length).fill(null));
-  }, []);
+  }, [customWorkflowNodes.length]);
 
   // Tab selection handler
   const handleTabChange = (tab: string) => {

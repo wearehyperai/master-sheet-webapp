@@ -101,6 +101,8 @@ const EnrichmentFormulas = () => {
     "categories"
   );
 
+  console.log({selectedCategory})
+
   // Personal Info cards
   const personalCards: CategoryCard[] = [
     {
@@ -394,6 +396,7 @@ const EnrichmentFormulas = () => {
 
   // Sample workflow nodes and API info for the selected formula
   const getWorkflowNodes = (formula: Formula): WorkflowNode[] => {
+    console.log({formula})
     return [
       {
         node_id: 1,
