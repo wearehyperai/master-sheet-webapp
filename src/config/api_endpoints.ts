@@ -1,6 +1,6 @@
 
 class ApiEndpoints {
-    static readonly SERVER_URL = 'http://127.0.0.1:8686';
+    static readonly SERVER_URL = 'http://82.180.147.105:8567';
     static readonly CREATE_USER = `${this.SERVER_URL}/users`;
     static readonly BASE_URL = 'http://localhost:3000';
     static readonly API_KEY = '1234567890';
