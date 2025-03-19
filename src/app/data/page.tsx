@@ -11,12 +11,12 @@ import { socketService } from '@/services/socket/socketService';
 import { APIProviderIds, apiProviders } from '@/utils/api_provider_data';
 import { useUser } from '@clerk/nextjs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import ApiSidebar from './components/ApiSidebar';
 import DataTable from './components/DataTable';
 import ProgressIndicator from './components/ProgressIndicator';
 
-export default function DataPage() {
+function DataPageContent() {
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
     const [processedData, setProcessedData] = useState<number>(0);
     const [columns, setColumns] = useState<string[]>([]);
@@ -278,5 +278,13 @@ export default function DataPage() {
                 onRunApi={handleRunApi}
             />
         </main >
+    );
+}
+
+export default function DataPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <DataPageContent />
+        </Suspense>
     );
 }

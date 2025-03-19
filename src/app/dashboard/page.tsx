@@ -12,10 +12,10 @@ import { SocketReceiveEvents } from "@/services/socket/socketEvents";
 import { socketService } from "@/services/socket/socketService";
 import { SignedIn, useUser } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Card from "./components/card_components";
 
-export default function Dashboard() {
+function DashboardContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { isLoaded, user } = useUser();
@@ -75,5 +75,13 @@ export default function Dashboard() {
                 </div>
             </div>
         </SignedIn>
+    );
+}
+
+export default function Dashboard() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <DashboardContent />
+        </Suspense>
     );
 }
