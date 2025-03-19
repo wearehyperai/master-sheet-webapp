@@ -9,7 +9,8 @@ import { IUserUploads } from '@/models/user_uploads';
 import { SocketReceiveEvents } from '@/services/socket/socketEvents';
 import { socketService } from '@/services/socket/socketService';
 import { APIProviderIds, apiProviders } from '@/utils/api_provider_data';
-import { useSearchParams } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ApiSidebar from './components/ApiSidebar';
 import DataTable from './components/DataTable';
@@ -32,45 +33,58 @@ export default function DataPage() {
     const [userDetails, setUserDetails] = useState<IUser | null>(null);
     const [uploadId, setUploadId] = useState<string>('');
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const { isLoaded, user } = useUser();
 
 
     useEffect(() => {
-        if (!userDetails && userRepo.user) {
+        if (!userDetails) {
+            const params = new URLSearchParams(searchParams.toString());
+            params.delete("source");
+            console.log('params ', params.toString());
+            router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+        }
+    }, [userDetails]);
+
+    useEffect(() => {
+        function fetchData() {
+            const uploadId = searchParams?.get("id");
+            const source = searchParams?.get("source");
+            console.log("Socket onConnectionChange:", uploadId);
+            if (uploadId && uploadId.length > 0) {
+                console.log("Socket connected, requesting data for file:", uploadId);
+                if (source != 'upload') {
+                    socketService.askForData(uploadId);
+                }
+                setUploadId(uploadId);
+            }
+        }
+
+        function askForData() {
             setUserDetails(userRepo.user);
-            socketService.connectToServer(userRepo.user._id);
+            socketService.connectToServer(userRepo.user!._id);
+            if (socketService.IsConnected) {
+                fetchData();
+            }
             socketService.onConnectionChange((connected) => {
-                const uploadId = searchParams?.get("id");
-                const source = searchParams?.get("source");
-                console.log("Socket onConnectionChange:", connected, uploadId);
-                if (connected && uploadId && uploadId.length > 0) {
-                    console.log("Socket connected, requesting data for file:", uploadId);
-                    if (source != 'upload') {
-                        socketService.askForData(uploadId);
-                    }
-                    setUploadId(uploadId);
+                if (connected) {
+                    fetchData();
                 }
             });
         }
-        /* if (isLoaded && user) {
-            console.log('User data has been loaded:', user);
 
-            fetchUser(user.id).then(userData => {
+        if (!userDetails && userRepo.user) {
+            askForData();
+        }
+        else if (!userRepo.user && user) {
+            userRepo.fetchUser(user.id).then(userData => {
                 if (userData) {
-                    console.log('User data fetched:', userData._id);
-                    socketService.connectToServer(userData._id);
-                    socketService.onConnectionChange((connected) => {
-                        const fileName = searchParams?.get("file");
-                        const source = searchParams?.get("source");
-                        console.log("Socket onConnectionChange:", connected, fileName);
-                        if (connected && fileName && fileName.length > 0 && source != 'upload') {
-                            console.log("Socket connected, requesting data for file:", fileName);
-                            socketService.askForData(fileName);
-                        }
-                    });
+                    askForData();
                 }
             });
-        } */
-    }, [userDetails, userRepo.user]);
+        }
+    }, [userDetails, userRepo.user, isLoaded, user]);
 
 
     useEffect(() => {

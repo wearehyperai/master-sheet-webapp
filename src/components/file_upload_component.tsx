@@ -10,14 +10,15 @@ import ProgressBar from './progress_bar';
 
 interface FileUploadProps {
     userId: string;
+    isUploading: boolean;
+    setIsUploading: (isUploading: boolean) => void;
+    progressData: any;
 }
 
-export default function FileUpload({ userId }: FileUploadProps) {
+export default function FileUpload({ userId, isUploading, setIsUploading, progressData }: FileUploadProps) {
     const [isDragging, setIsDragging] = useState(false);
-    const [isUploading, setIsUploading] = useState(false);
     const [file, setFile] = useState<File>();
     const [isSocketConnected, setIsSocketConnected] = useState(false);
-    const progressData = useSocketStore((state) => state.eventData[SocketReceiveEvents.uploadProgress]);
     const router = useRouter();
     const uploadCompleteData = useSocketStore((state) => state.eventData[SocketReceiveEvents.uploadComplete]);
     const setEventData = useSocketStore((state) => state.setEventData);
@@ -27,7 +28,7 @@ export default function FileUpload({ userId }: FileUploadProps) {
             userUploadsRepository.fetchUserUploads(userId, true);
             const id = uploadCompleteData;
             console.log("Navigating to /data ", id);
-            router.push(`/data?file=${id}`);
+            router.push(`/data?id=${id}&source=upload`);
             setEventData(SocketReceiveEvents.uploadComplete, null);
         }
     }, [uploadCompleteData]);
@@ -55,13 +56,23 @@ export default function FileUpload({ userId }: FileUploadProps) {
         setIsDragging(false);
     }, []);
 
-    const handleDrop = useCallback((e: React.DragEvent) => {
+    const handleDrop = useCallback(async (e: React.DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragging(false);
-        const droppedFiles = Array.from(e.dataTransfer.files);
-        setFile(droppedFiles[0]);
-    }, []);
+        const selectedFiles = Array.from(e.dataTransfer.files);
+        setIsUploading(true);
+        try {
+            if (!isSocketConnected) {
+                throw new Error('Socket not connected');
+            }
+            await socketService.sendFile(selectedFiles[0]);
+            setFile(selectedFiles[0]);
+        } catch (error) {
+            setIsUploading(false);
+            console.error('Error sending file:', error);
+        }
+    }, [isSocketConnected]);
 
     const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;

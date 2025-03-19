@@ -5,8 +5,10 @@ import StartWithBlank from "@/components/start_with_blank";
 import UserHeader from "@/components/user_header";
 import userRepo from "@/data/user_repo";
 import userUploadsRepository from "@/data/user_upload_repos";
+import { useSocketStore } from "@/hooks/useSocketService";
 import { IUser } from "@/models/user";
 import { IUserUploads } from "@/models/user_uploads";
+import { SocketReceiveEvents } from "@/services/socket/socketEvents";
 import { socketService } from "@/services/socket/socketService";
 import { SignedIn, useUser } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -20,6 +22,9 @@ export default function Dashboard() {
     const [dbuser, setUser] = useState<IUser | null>(null);
     const [userUploads, setUserUploads] = useState<IUserUploads[]>([]);
     const [uploadFetched, setUploadFetched] = useState<boolean>(false);
+    const progressData = useSocketStore((state) => state.eventData[SocketReceiveEvents.uploadProgress]);
+    const [isUploading, setIsUploading] = useState(false);
+
 
     useEffect(() => {
         if (isLoaded && user) {
@@ -62,11 +67,11 @@ export default function Dashboard() {
             <div className="flex flex-col h-screen w-full">
                 <UserHeader />
                 <div className="flex items-center justify-center min-h-screen bg-gray-50">
-                    <FileUpload userId={dbuser?._id ?? ''} />
-                    {userUploads.length > 0 && <Card uploads={userUploads} onClickCard={function (index: number): void {
+                    <FileUpload userId={dbuser?._id ?? ''} isUploading={isUploading} setIsUploading={setIsUploading} progressData={progressData} />
+                    {userUploads.length > 0 && !isUploading && <Card uploads={userUploads} onClickCard={function (index: number): void {
                         router.push(`/data?id=${userUploads[index]._id}`,);
                     }} />}
-                    <StartWithBlank />
+                    {!isUploading && (<StartWithBlank />)}
                 </div>
             </div>
         </SignedIn>

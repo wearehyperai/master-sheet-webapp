@@ -2,6 +2,7 @@
 import UserHeader from "@/components/user_header";
 import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import posthog from "posthog-js";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -12,6 +13,13 @@ export default function Home() {
       console.log('Home User has signed in!');
     }
   }, [isLoaded, isSignedIn]);
+
+  useEffect(() => {
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
+      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+      capture_pageview: false
+    })
+  }, [])
 
   return (
     <div className="relative flex gap-3">
