@@ -1,4 +1,4 @@
-import ApiEndpoints from '@/config/api_endpoints';
+import ApiEndpoints from '@/config/apiEndpoints';
 import { IUser } from '@/models/user';
 import { IUserUploads } from '@/models/user_uploads';
 import { UserResource } from '@clerk/types';

@@ -1,5 +1,5 @@
 "use client"
-import userUploadsRepository from '@/data/user_upload_repos';
+import userUploadsRepository from '@/data/userUploadsRepo';
 import { useSocketStore } from '@/hooks/useSocketService';
 import { SocketReceiveEvents } from '@/services/socket/socketEvents';
 import { socketService } from '@/services/socket/socketService';

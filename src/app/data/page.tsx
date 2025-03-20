@@ -1,14 +1,14 @@
 'use client';
 
-import userRepo from '@/data/user_repo';
-import userUploadsRepository from '@/data/user_upload_repos';
+import userRepo from '@/data/userRepo';
+import userUploadsRepository from '@/data/userUploadsRepo';
 import { useSocketStore } from '@/hooks/useSocketService';
 import { CSVDataList, RecordData } from '@/models/csv_data';
 import { IUser } from '@/models/user';
 import { IUserUploads } from '@/models/user_uploads';
 import { SocketReceiveEvents } from '@/services/socket/socketEvents';
 import { socketService } from '@/services/socket/socketService';
-import { APIProviderIds, apiProviders } from '@/utils/api_provider_data';
+import { APIProviderIds, apiProviders } from '@/utils/apiProviderData';
 import { useUser } from '@clerk/nextjs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';

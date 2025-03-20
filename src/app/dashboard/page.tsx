@@ -3,8 +3,8 @@
 import FileUpload from "@/components/FileUpload";
 import StartWithBlank from "@/components/StartWithBlank";
 import UserHeader from "@/components/UserHeader";
-import userRepo from "@/data/user_repo";
-import userUploadsRepository from "@/data/user_upload_repos";
+import userRepo from "@/data/userRepo";
+import userUploadsRepository from "@/data/userUploadsRepo";
 import { useSocketStore } from "@/hooks/useSocketService";
 import { IUser } from "@/models/user";
 import { IUserUploads } from "@/models/user_uploads";

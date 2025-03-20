@@ -1,4 +1,4 @@
-import ApiEndpoints from "@/config/api_endpoints";
+import ApiEndpoints from "@/config/apiEndpoints";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
