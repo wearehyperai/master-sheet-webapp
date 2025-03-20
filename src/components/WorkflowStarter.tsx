@@ -60,13 +60,16 @@ const WorkflowStarter: React.FC<WorkflowStarterProps> = ({
     
     // Initialize input values for the first node or scraper
     if (isScraperMode && initialScraperId) {
-      const option = nodes[0]?.options.find(opt => opt.id === initialScraperId);
-      if (option) {
-        const initialInputs: Record<string, string[]> = {};
-        option.inputs.forEach(input => {
-          initialInputs[input.label] = Array(inputRowsCount).fill('');
-        });
-        setInputValues(initialInputs);
+      const node = nodes[0];
+      if (node && node.options) {
+        const option = node.options.find(opt => opt.id === initialScraperId);
+        if (option) {
+          const initialInputs: Record<string, string[]> = {};
+          option.inputs.forEach(input => {
+            initialInputs[input.label] = Array(inputRowsCount).fill('');
+          });
+          setInputValues(initialInputs);
+        }
       }
     }
   }, [nodes, isScraperMode, initialScraperId, inputRowsCount]);
@@ -83,13 +86,16 @@ const WorkflowStarter: React.FC<WorkflowStarterProps> = ({
     
     // Reset input values if this node's option changed
     if (optionId !== null) {
-      const option = nodes[nodeIndex]?.options.find(opt => opt.id === optionId);
-      if (option) {
-        const initialInputs: Record<string, string[]> = {};
-        option.inputs.forEach(input => {
-          initialInputs[input.label] = Array(inputRowsCount).fill('');
-        });
-        setInputValues(prev => ({...prev, ...initialInputs}));
+      const node = nodes[nodeIndex];
+      if (node && node.options) {
+        const option = node.options.find(opt => opt.id === optionId);
+        if (option) {
+          const initialInputs: Record<string, string[]> = {};
+          option.inputs.forEach(input => {
+            initialInputs[input.label] = Array(inputRowsCount).fill('');
+          });
+          setInputValues(prev => ({...prev, ...initialInputs}));
+        }
       }
     }
   };

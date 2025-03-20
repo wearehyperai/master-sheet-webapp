@@ -1,5 +1,3 @@
-// Types for the workflow components
-
 export interface InputField {
     label: string;
     placeholder?: string;
@@ -19,7 +17,7 @@ export interface InputField {
     node_id: number;
     name: string;
     desc: string;
-    options: NodeOption[];
+    options?: NodeOption[];
   }
   
   export interface ApiParameter {
@@ -77,4 +75,56 @@ export interface InputField {
       bodyParams?: boolean;
       defaultParams?: Record<string, number | string>;
     };
-  }
+}
+  
+export interface EWorkflowNode {
+    node_id: number;
+    name: string;
+    desc: string;
+    input: string[];
+}
+  
+export interface EWorkflow {
+    id: number;
+    name: string;
+    desc: string;
+    type: string;
+    input: string[];
+    output: string;
+    nodes: EWorkflowNode[];
+}
+  
+export interface CustomWorkflowOption {
+    name: string;
+    inputs: {
+      label: string;
+      placeholder: string;
+      type?: string;
+      options?: string[];
+    }[];
+}
+  
+export  interface CustomWorkflowNode {
+    node_id: number;
+    name: string;
+    desc: string;
+    isDropdown: boolean;
+    options: CustomWorkflowOption[];
+}
+
+export interface WorkflowInput {
+  label: string;
+  placeholder: string;
+  type?: string;
+  options?: string[];
+}
+  
+
+export interface WorkflowListProps {
+  activeTab: string;
+  onViewWorkflow: (id: number) => void;
+  onCreateCustom: () => void;
+}
+
+export type WorkflowView = 'cards' | 'detail' | 'custom';
+export type WorkflowTab = 'all' | 'email' | 'linkedin' | 'website';

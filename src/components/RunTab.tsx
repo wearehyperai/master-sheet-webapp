@@ -1,21 +1,11 @@
 "use client";
 
 import React from 'react';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Play, 
-  SquareArrowUpRight, 
-  Mail, 
-  Share2, 
-  Cog, 
-  Table,
-  Plus
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, SquareArrowUpRight, Mail, Share2, Cog, Table, Plus } from 'lucide-react';
+import { NodeOption, WorkflowNode } from '@/types/workflow';
+import { RunTabProps } from '@/types/comps';
 import InputRow from './InputRow';
 import FileUploadSection from './FileUploadSection';
-import { NodeOption } from '@/types/workflow';
-import { RunTabProps } from '@/types/comps';
 
 const RunTab: React.FC<RunTabProps> = ({
   nodes,
@@ -43,7 +33,7 @@ const RunTab: React.FC<RunTabProps> = ({
   };
 
   // Get node status class (for styling)
-  const getNodeStatusClass = (nodeIndex: number) => {
+  const getNodeStatusClass = (nodeIndex: number): string => {
     if (nodeIndex === currentNode) return 'border-2 border-emerald-500 bg-white text-gray-700';
     if (nodeIndex < currentNode) return 'bg-emerald-100 text-emerald-700';
     return 'bg-gray-200 text-gray-600';
@@ -51,11 +41,14 @@ const RunTab: React.FC<RunTabProps> = ({
 
   // Get option by ID
   const getOptionById = (nodeIndex: number, optionId: string): NodeOption | undefined => {
-    return nodes[nodeIndex]?.options.find(option => option.id === optionId);
+    if (!nodes[nodeIndex] || !nodes[nodeIndex].options) {
+      return undefined;
+    }
+    return nodes[nodeIndex]?.options.find((option: NodeOption) => option.id === optionId);
   };
 
   // Handle next action
-  const handleNext = () => {
+  const handleNext = (): void => {
     if (currentNode === nodes.length - 1 || (isScraperMode && currentNode === getLastSelectedNodeIndex())) {
       onSubmit();
     } else {
@@ -64,7 +57,7 @@ const RunTab: React.FC<RunTabProps> = ({
   };
 
   // Get the index of the last selected node
-  const getLastSelectedNodeIndex = () => {
+  const getLastSelectedNodeIndex = (): number => {
     if (isScraperMode) {
       // For scraper mode, find the last consecutive completed node
       let lastIndex = 0;
@@ -87,7 +80,7 @@ const RunTab: React.FC<RunTabProps> = ({
     : null;
 
   // Function to determine if this is the last node
-  const isLastNode = () => {
+  const isLastNode = (): boolean => {
     if (isScraperMode) {
       return currentNode === getLastSelectedNodeIndex();
     }
@@ -107,7 +100,7 @@ const RunTab: React.FC<RunTabProps> = ({
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left column - Nodes */}
         <div className="w-full md:w-1/3">
-          {nodes.map((node, index) => {
+          {nodes.map((node: WorkflowNode, index: number) => {
             // For scraper mode, only show nodes that have been selected
             if (isScraperMode && index > 0 && !completedNodes[index-1]) {
               return null;

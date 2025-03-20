@@ -6,7 +6,7 @@ import { socketService } from '@/services/socket/socketService';
 import { Upload } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import ProgressBar from './progress_bar';
+import ProgressBar from './ProgressBar';
 import { FileUploadProps } from '@/types/comps';
 
 export default function FileUpload({ userId, isUploading, setIsUploading, progressData }: FileUploadProps) {

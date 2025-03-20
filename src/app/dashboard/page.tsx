@@ -13,7 +13,7 @@ import { socketService } from "@/services/socket/socketService";
 import { SignedIn, useUser } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import Card from "./components/card_components";
+import Card from "./components/CardWithLink";
 
 function DashboardContent() {
     const router = useRouter();

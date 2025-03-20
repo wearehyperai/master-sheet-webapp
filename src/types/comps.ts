@@ -28,6 +28,22 @@ export interface ApiDocumentationProps {
   copied: boolean;
   onCopy: () => void;
 }
+export interface RunTabProps {
+  nodes: WorkflowNode[];
+  currentNode: number;
+  selectedOptions: (string | null)[];
+  completedNodes: boolean[];
+  isScraperMode?: boolean;
+  showFileUpload?: boolean;
+  inputValues: Record<string, string[]>;
+  inputRowsCount: number;
+  onUpdateInputValue: (label: string, index: number, value: string) => void;
+  onAddInputRow: () => void;
+  onRemoveInputRow: (index: number) => void;
+  onPreviousNode: () => void;
+  onNextNode: () => void;
+  onSubmit: () => void;
+}
 
 export interface BuildTabProps {
   nodes: WorkflowNode[];
@@ -152,23 +168,6 @@ export interface ProgressBarProps {
     totalSize: number;
     showPercentage?: boolean;
     animate?: boolean;
-}
-
-export interface RunTabProps {
-  nodes: WorkflowNode[];
-  currentNode: number;
-  selectedOptions: (string | null)[];
-  completedNodes: boolean[];
-  isScraperMode?: boolean;
-  showFileUpload?: boolean;
-  inputValues: Record<string, string[]>;
-  inputRowsCount: number;
-  onUpdateInputValue: (fieldName: string, index: number, value: string) => void;
-  onAddInputRow: () => void;
-  onRemoveInputRow: (index: number) => void;
-  onPreviousNode: () => void;
-  onNextNode: () => void;
-  onSubmit: () => void;
 }
 
 export interface SidebarItemProps {
