@@ -1,11 +1,15 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronUp, ChevronDown, Search, MessageSquare, Database, FileDown, Brain,  Zap, Link as LinkIcon,  Settings, Edit, Globe, MapPin, User, ThumbsUp, Search as SearchIcon, Beaker, Combine, Workflow } from 'lucide-react';
-import { CategoryData, FilteredSections, SidebarItemProps } from '@/types/comps';
+import { ChevronUp, ChevronDown, Search } from 'lucide-react';
+import { FilteredSections, NestedSectionProps, SidebarCategoryProps, SidebarItemProps } from '@/types/comps';
+import { sidebarStructure } from '@/data/sidebar';
 
+/**
+ * SidebarItem Component
+ * Renders an individual navigation item
+ */
 const SidebarItem: React.FC<SidebarItemProps> = ({ icon, title, path, isActive }) => {
   return (
     <Link href={path} className={`flex items-center py-2 px-4 my-1 rounded-lg transition-colors ${
@@ -19,15 +23,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon, title, path, isActive }
   );
 };
 
-interface SidebarCategoryProps {
-  title: string;
-  children: React.ReactNode;
-  icon?: React.ReactNode;
-  initialOpen?: boolean;
-  id: string;
-  isVisible: boolean;
-}
-
+/**
+ * SidebarCategory Component
+ * Renders a collapsible category of navigation items
+ */
 const SidebarCategory: React.FC<SidebarCategoryProps> = ({ 
   title, 
   children, 
@@ -57,14 +56,10 @@ const SidebarCategory: React.FC<SidebarCategoryProps> = ({
   );
 };
 
-interface NestedSectionProps {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  id: string;
-  isVisible: boolean;
-}
-
+/**
+ * NestedSection Component
+ * Renders a nested section within a category
+ */
 const NestedSection: React.FC<NestedSectionProps> = ({ 
   title, 
   children, 
@@ -95,83 +90,59 @@ const NestedSection: React.FC<NestedSectionProps> = ({
   );
 };
 
+/**
+ * NestedItem Component
+ * Renders an item within a nested section
+ */
+const NestedItem: React.FC<SidebarItemProps> = ({ icon, title, path, isActive }) => {
+  return (
+    <Link 
+      href={path} 
+      className={`flex items-center py-2 px-3 my-1 rounded-md text-sm ${
+        isActive
+          ? 'bg-emerald-50 text-emerald-600 font-medium' 
+          : 'hover:bg-gray-50 text-gray-700'
+      }`}
+    >
+      <div className="mr-3">{icon}</div>
+      <div>{title}</div>
+    </Link>
+  );
+};
+
+/**
+ * SearchBar Component
+ * Renders the search input for filtering sidebar items
+ */
+const SearchBar: React.FC<{ value: string; onChange: (value: string) => void }> = ({ 
+  value, 
+  onChange 
+}) => {
+  return (
+    <div className="px-4 py-3 border-b border-gray-200">
+      <div className="flex items-center bg-white rounded-lg p-2 border border-gray-200 shadow-sm hover:border-emerald-300 focus-within:border-emerald-400 transition-colors">
+        <Search className="text-gray-400 mr-2" size={16} />
+        <input
+          type="text"
+          placeholder="Search..."
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="bg-transparent outline-none text-gray-600 w-full text-sm"
+        />
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Main Sidebar Component
+ * Contains the entire sidebar structure and filtering logic
+ */
 const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredSections, setFilteredSections] = useState<FilteredSections>({});
   
-  // Data structure for all sidebar items with unique IDs
-  const sidebarStructure: CategoryData[] = [
-    {
-      id: 'my-workflows',
-      title: 'MY WORKFLOWS',
-      icon: <Workflow size={18} className="text-emerald-500" />,
-      items: [
-        { id: 'my-all-workflow', icon: <Workflow size={16} className="text-emerald-500" />, title: 'My workflows', path: '/my-workflows' }
-      ]
-    },
-    {
-      id: 'api-kit',
-      title: 'API KIT',
-      icon: <Combine size={18} className="text-emerald-500" />,
-      items: [
-        { id: 'my-api-kit', icon: <Combine size={16} className="text-emerald-500" />, title: 'API Kit', path: '/api-kit' }
-      ]
-    },
-    {
-      id: 'ai-tools',
-      title: 'AI TOOLS',
-      icon: <Brain size={18} className="text-emerald-500" />,
-      items: [
-        { id: 'ask-ai', icon: <MessageSquare size={16} className="text-emerald-500" />, title: 'Ask AI', path: '/ask-ai' },
-        { id: 'extract-ai', icon: <FileDown size={16} className="text-emerald-500" />, title: 'Extract AI', path: '/extract-ai' },
-      ]
-    },
-    {
-      id: 'data-bank',
-      title: 'DATA BANK',
-      icon: <Database size={18} className="text-emerald-500" />,
-      items: [
-        { id: 'data-sources', icon: <Database size={16} className="text-emerald-500" />, title: 'Data Sources', path: '/data-sources' },
-        { id: 'data-pipelines', icon: <Zap size={16} className="text-emerald-500" />, title: 'Data Pipelines', path: '/data-pipelines' },
-      ]
-    },
-    {
-      id: 'data-enrichment',
-      title: 'DATA ENRICHMENT',
-      icon: <Zap size={18} className="text-emerald-500" />,
-      items: [
-        { id: 'universal-api', icon: <LinkIcon size={16} className="text-emerald-500" />, title: 'Universal API connector', path: '/universal-api' },
-        { id: 'enrichment-workflows', icon: <Settings size={16} className="text-emerald-500" />, title: 'Enrichment Workflows', path: '/enrichment-workflows' },
-        { id: 'hyper-personalization', icon: <Edit size={16} className="text-emerald-500" />, title: 'Hyper Personalization', path: '/hyper-personalization' },
-        { id: 'enrichment-recipes', icon: <Beaker size={16} className="text-emerald-500" />, title: 'Enrichment Recipes', path: '/enrichment-recipes' },
-      ]
-    },
-    {
-      id: 'scrapers',
-      title: 'SCRAPERS',
-      icon: <Globe size={18} className="text-emerald-500" />,
-      nested: [
-        {
-          id: 'google-scrapers',
-          title: 'Google Scrapers',
-          items: [
-            { id: 'google-map-scraper', icon: <MapPin size={16} className="text-emerald-500" />, title: 'Google Map Scraper', path: '/google-map-scraper' },
-          ]
-        },
-        {
-          id: 'linkedin-scrapers',
-          title: 'LinkedIn Scrapers',
-          items: [
-            { id: 'linkedin-profile-scraper', icon: <User size={16} className="text-emerald-500" />, title: 'LinkedIn Profile Scraper', path: '/linkedin-profile-scraper' },
-            { id: 'linkedin-like-scraper', icon: <ThumbsUp size={16} className="text-emerald-500" />, title: 'LinkedIn Like Scraper', path: '/linkedin-like-scraper' },
-            { id: 'linkedin-profile-finder', icon: <SearchIcon size={16} className="text-emerald-500" />, title: 'LinkedIn Profile Finder', path: '/linkedin-profile-finder' },
-          ]
-        }
-      ]
-    }
-  ];
-
   // Effect to handle search filtering
   useEffect(() => {
     if (!searchQuery) {
@@ -242,175 +213,71 @@ const Sidebar: React.FC = () => {
     });
     
     setFilteredSections(visible);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
   
+  // Render the categories and their items
+  const renderCategories = () => {
+    return sidebarStructure.map((category) => (
+      <SidebarCategory 
+        key={category.id}
+        id={category.id}
+        title={category.title} 
+        icon={category.icon}
+        isVisible={filteredSections[category.id] ?? true}
+      >
+        {/* Regular items */}
+        {category.items?.map(item => (
+          <SidebarItem
+            key={item.id}
+            icon={item.icon}
+            title={item.title}
+            path={item.path}
+            isActive={pathname === item.path}
+          />
+        ))}
+        
+        {/* Nested sections */}
+        {category.nested?.map(section => (
+          <NestedSection 
+            key={section.id}
+            id={section.id}
+            title={section.title}
+            isVisible={filteredSections[section.id] ?? true}
+          >
+            {section.items.map(item => (
+              <NestedItem 
+                key={item.id}
+                icon={item.icon}
+                title={item.title}
+                path={item.path}
+                isActive={pathname === item.path}
+              />
+            ))}
+          </NestedSection>
+        ))}
+      </SidebarCategory>
+    ));
+  };
+
   return (
     <div className="w-72 h-screen bg-gray-50 flex-shrink-0 border-r border-gray-200 font-sans flex flex-col">
-      {/* Title instead of header */}
+      {/* Title */}
       <div className="py-5 px-4 border-b border-gray-200">
         <h1 className="text-xl font-bold text-emerald-600">Master Enrichment</h1>
       </div>
 
       {/* Search */}
-      <div className="px-4 py-3 border-b border-gray-200">
-        <div className="flex items-center bg-white rounded-lg p-2 border border-gray-200 shadow-sm hover:border-emerald-300 focus-within:border-emerald-400 transition-colors">
-          <Search className="text-gray-400 mr-2" size={16} />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent outline-none text-gray-600 w-full text-sm"
-          />
-        </div>
-      </div>
+      <SearchBar 
+        value={searchQuery}
+        onChange={setSearchQuery}
+      />
 
       {/* Sidebar Content */}
       <div className="px-4 py-3 overflow-y-auto flex-grow custom-scrollbar">
-              {/* AI Tools Section */}
-              <SidebarCategory 
-          id="my-workflows"
-          title="MY WORKFLOWS" 
-          icon={<Workflow size={18} className="text-emerald-500" />}
-          isVisible={filteredSections['my-workflows'] ?? true}
-        >
-          {sidebarStructure[0].items?.map(item => (
-            <SidebarItem
-              key={item.id}
-              icon={item.icon}
-              title={item.title}
-              path={item.path}
-              isActive={pathname === item.path}
-            />
-          ))}
-        </SidebarCategory>
-
-                {/* AI Tools Section */}
-                <SidebarCategory 
-          id="api-kit"
-          title="API KIT" 
-          icon={<Combine size={18} className="text-emerald-500" />}
-          isVisible={filteredSections['api-kit'] ?? true}
-        >
-          {sidebarStructure[1].items?.map(item => (
-            <SidebarItem
-              key={item.id}
-              icon={item.icon}
-              title={item.title}
-              path={item.path}
-              isActive={pathname === item.path}
-            />
-          ))}
-        </SidebarCategory>
-
-        {/* AI Tools Section */}
-        <SidebarCategory 
-          id="ai-tools"
-          title="AI TOOLS" 
-          icon={<Brain size={18} className="text-emerald-500" />}
-          isVisible={filteredSections['ai-tools'] ?? true}
-        >
-          {sidebarStructure[2].items?.map(item => (
-            <SidebarItem
-              key={item.id}
-              icon={item.icon}
-              title={item.title}
-              path={item.path}
-              isActive={pathname === item.path}
-            />
-          ))}
-        </SidebarCategory>
-
-        {/* Data Bank Section */}
-        <SidebarCategory 
-          id="data-bank"
-          title="DATA BANK" 
-          icon={<Database size={18} className="text-emerald-500" />}
-          isVisible={filteredSections['data-bank'] ?? true}
-        >
-          {sidebarStructure[3].items?.map(item => (
-            <SidebarItem
-              key={item.id}
-              icon={item.icon}
-              title={item.title}
-              path={item.path}
-              isActive={pathname === item.path}
-            />
-          ))}
-        </SidebarCategory>
-
-        {/* Data Enrichment Section */}
-        <SidebarCategory 
-          id="data-enrichment"
-          title="DATA ENRICHMENT"
-          icon={<Zap size={18} className="text-emerald-500" />}
-          isVisible={filteredSections['data-enrichment'] ?? true}
-        >
-          {sidebarStructure[4].items?.map(item => (
-            <SidebarItem
-              key={item.id}
-              icon={item.icon}
-              title={item.title}
-              path={item.path}
-              isActive={pathname === item.path}
-            />
-          ))}
-        </SidebarCategory>
-
-        {/* Scrapers Section */}
-        <SidebarCategory 
-          id="scrapers"
-          title="SCRAPERS"
-          icon={<Globe size={18} className="text-emerald-500" />}
-          isVisible={filteredSections['scrapers'] ?? true}
-        >
-          {/* Google Scrapers Subsection */}
-          <NestedSection 
-            id="google-scrapers"
-            title="Google Scrapers"
-            isVisible={filteredSections['google-scrapers'] ?? true}
-          >
-            {sidebarStructure[5].nested?.[0].items.map(item => (
-              <Link 
-                key={item.id}
-                href={item.path} 
-                className={`flex items-center py-2 px-3 my-1 rounded-md text-sm ${
-                  pathname === item.path
-                    ? 'bg-emerald-50 text-emerald-600 font-medium' 
-                    : 'hover:bg-gray-50 text-gray-700'
-                }`}
-              >
-                <div className="mr-3">{item.icon}</div>
-                <div>{item.title}</div>
-              </Link>
-            ))}
-          </NestedSection>
-
-          {/* LinkedIn Scrapers Subsection */}
-          <NestedSection 
-            id="linkedin-scrapers"
-            title="LinkedIn Scrapers"
-            isVisible={filteredSections['linkedin-scrapers'] ?? true}
-          >
-            {sidebarStructure[5].nested?.[1].items.map(item => (
-              <Link 
-                key={item.id}
-                href={item.path} 
-                className={`flex items-center py-2 px-3 my-1 rounded-md text-sm ${
-                  pathname === item.path
-                    ? 'bg-emerald-50 text-emerald-600 font-medium' 
-                    : 'hover:bg-gray-50 text-gray-700'
-                }`}
-              >
-                <div className="mr-3">{item.icon}</div>
-                <div>{item.title}</div>
-              </Link>
-            ))}
-          </NestedSection>
-        </SidebarCategory>
+        {renderCategories()}
       </div>
 
+      {/* Custom scrollbar styles */}
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;

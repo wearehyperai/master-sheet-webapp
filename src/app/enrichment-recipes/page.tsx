@@ -1,6 +1,6 @@
 "use client";
 
-import EnrichmentFormulas from '@/components/EnrichmentFormulas';
+import EnrichmentFormulas from '@/components/enrichment/EnrichmentFormulas';
 import React from 'react';
 
 function EnrichmentRecipes() {

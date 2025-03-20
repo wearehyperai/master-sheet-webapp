@@ -42,38 +42,50 @@ export interface BuildTabProps {
   onProceedToRun: () => void;
 }
 
-// Formula type
-export interface Formula {
-  id: number;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  credits: number;
-  node_id?: number;
-  details: {
-    usage: string;
-    inputParams: {
-      name: string;
-      fieldName?: string;
-      type: string;
-      required: boolean;
-      description: string;
-    }[];
-    outputParams: {
-      name: string;
-      fieldName?: string;
-      type: string;
-      description: string;
-    }[];
-    example: string;
-  };
+
+export interface InputParam {
+    name: string;
+    fieldName?: string;
+    type: string;
+    required: boolean;
+    description: string;
 }
+  
+export interface OutputParam {
+    name: string;
+    fieldName?: string;
+    type: string;
+    description: string;
+}
+  
+export interface FormulaDetails {
+    usage: string;
+    inputParams: InputParam[];
+    outputParams: OutputParam[];
+    example: string;
+}
+  
+export interface Formula {
+    id: number;
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+    credits: number;
+    node_id: number;
+    details: FormulaDetails;
+}
+  
 
 export interface CategoryCard {
   id: string;
   title: string;
   icon: React.ReactNode;
   color?: string;
+}
+
+export interface CategoryList {
+  activeTab: TabType;
+  onCategoryClick: (categoryId: string) => void;
 }
 
 export interface ApiInfo {
@@ -95,12 +107,7 @@ export interface ApiInfo {
   }[];
 }
 
-// Workflow Node type
-export interface EnWorkflowNode {
-  node_id: number;
-  name: string;
-  desc: string;
-  options: {
+export interface EnWorkflowNodeOption {
     id: string;
     name: string;
     inputs: {
@@ -109,8 +116,14 @@ export interface EnWorkflowNode {
       type?: string;
       options?: string[];
     }[];
-  }[];
 }
+  
+export interface EnWorkflowNode {
+    node_id: number;
+    name: string;
+    desc: string;
+    options: EnWorkflowNodeOption[];
+} 
 
 export interface ProgressDataType {
     progress: number;
@@ -163,6 +176,23 @@ export interface SidebarItemProps {
     title: string;
     path: string;
     isActive?: boolean;
+}
+  
+export interface SidebarCategoryProps {
+    title: string;
+    children: React.ReactNode;
+    icon?: React.ReactNode;
+    initialOpen?: boolean;
+    id: string;
+    isVisible: boolean;
+}
+
+export interface NestedSectionProps {
+    title: string;
+    children: React.ReactNode;
+    defaultOpen?: boolean;
+    id: string;
+    isVisible: boolean;
   }
   
 export  interface SidebarItem {
@@ -196,3 +226,6 @@ export interface WorkflowStarterProps {
   handleBackClick?: () => void;
   config?: WorkflowConfig;
 }
+
+export type TabType = "personal" | "company";
+export type ViewType = "categories" | "formulas" | "details";

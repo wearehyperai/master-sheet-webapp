@@ -1,5 +1,5 @@
 'use client';
-import UserHeader from "@/components/user_header";
+import UserHeader from "@/components/UserHeader";
 import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 // import posthog from "posthog-js";

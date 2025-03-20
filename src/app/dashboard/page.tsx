@@ -1,8 +1,8 @@
 
 'use client';
-import FileUpload from "@/components/file_upload_component";
-import StartWithBlank from "@/components/start_with_blank";
-import UserHeader from "@/components/user_header";
+import FileUpload from "@/components/FileUpload";
+import StartWithBlank from "@/components/StartWithBlank";
+import UserHeader from "@/components/UserHeader";
 import userRepo from "@/data/user_repo";
 import userUploadsRepository from "@/data/user_upload_repos";
 import { useSocketStore } from "@/hooks/useSocketService";
