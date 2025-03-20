@@ -7,18 +7,7 @@ import { Upload } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import ProgressBar from './progress_bar';
-
-interface ProgressDataType {
-    progress: number;
-    receivedSize: number;
-}
-
-interface FileUploadProps {
-    userId: string;
-    isUploading: boolean;
-    setIsUploading: (isUploading: boolean) => void;
-    progressData: ProgressDataType | null;
-}
+import { FileUploadProps } from '@/types/comps';
 
 export default function FileUpload({ userId, isUploading, setIsUploading, progressData }: FileUploadProps) {
     const [isDragging, setIsDragging] = useState(false);

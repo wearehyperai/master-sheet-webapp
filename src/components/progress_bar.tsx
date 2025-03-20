@@ -1,12 +1,5 @@
+import { ProgressBarProps } from '@/types/comps';
 import { useEffect, useState } from 'react';
-
-interface ProgressBarProps {
-    progress: number;
-    received: number;
-    totalSize: number;
-    showPercentage?: boolean;
-    animate?: boolean;
-}
 
 export default function ProgressBar({
     progress,

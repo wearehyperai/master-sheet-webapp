@@ -2,35 +2,7 @@
 
 import React from 'react';
 import { Copy } from 'lucide-react';
-
-interface ApiParameter {
-  name: string;
-  type: string;
-  required: boolean;
-  description: string;
-}
-
-interface ApiResponse {
-  code: string;
-  description: string;
-  example: string;
-}
-
-interface ApiInfo {
-  title: string;
-  description: string;
-  endpoint: string;
-  method: string;
-  parameters: ApiParameter[];
-  curl: string;
-  responses: ApiResponse[];
-}
-
-interface ApiDocumentationProps {
-  apiInfo: ApiInfo;
-  copied: boolean;
-  onCopy: () => void;
-}
+import { ApiDocumentationProps } from '@/types/comps';
 
 const ApiDocumentation: React.FC<ApiDocumentationProps> = ({ apiInfo, copied, onCopy }) => {
   const handleCopyCurl = () => {

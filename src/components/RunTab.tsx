@@ -14,24 +14,8 @@ import {
 } from 'lucide-react';
 import InputRow from './InputRow';
 import FileUploadSection from './FileUploadSection';
-import { NodeOption, WorkflowNode } from '@/types/workflow';
-
-interface RunTabProps {
-  nodes: WorkflowNode[];
-  currentNode: number;
-  selectedOptions: (string | null)[];
-  completedNodes: boolean[];
-  isScraperMode?: boolean;
-  showFileUpload?: boolean;
-  inputValues: Record<string, string[]>;
-  inputRowsCount: number;
-  onUpdateInputValue: (fieldName: string, index: number, value: string) => void;
-  onAddInputRow: () => void;
-  onRemoveInputRow: (index: number) => void;
-  onPreviousNode: () => void;
-  onNextNode: () => void;
-  onSubmit: () => void;
-}
+import { NodeOption } from '@/types/workflow';
+import { RunTabProps } from '@/types/comps';
 
 const RunTab: React.FC<RunTabProps> = ({
   nodes,

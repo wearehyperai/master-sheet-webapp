@@ -2,20 +2,8 @@
 
 import React from 'react';
 import { ChevronLeft, ChevronRight, Play, SquareArrowUpRight, Mail, Share2, Cog, Table } from 'lucide-react';
-import { NodeOption, WorkflowNode } from '@/types/workflow';
-
-interface BuildTabProps {
-  nodes: WorkflowNode[];
-  currentNode: number;
-  selectedOptions: (string | null)[];
-  completedNodes: boolean[];
-  isScraperMode?: boolean;
-  initialScraperId?: string;
-  onSelectOption: (nodeIndex: number, optionId: string | null) => void;
-  onPreviousNode: () => void;
-  onNextNode: () => void;
-  onProceedToRun: () => void;
-}
+import { NodeOption } from '@/types/workflow';
+import { BuildTabProps } from '@/types/comps';
 
 const BuildTab: React.FC<BuildTabProps> = ({
   nodes,

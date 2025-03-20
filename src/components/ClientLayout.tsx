@@ -1,5 +1,3 @@
-
-// Client component to handle route-based logic
 "use client";
 
 import { usePathname } from "next/navigation";

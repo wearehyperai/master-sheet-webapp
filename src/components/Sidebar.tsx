@@ -3,59 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  ChevronUp, 
-  ChevronDown, 
-  Search, 
-  MessageSquare, 
-  Database, 
-  FileDown, 
-  Brain,
-  Zap,
-  Link as LinkIcon,
-  Settings,
-  Edit,
-  Globe,
-  MapPin,
-  User,
-  ThumbsUp,
-  Search as SearchIcon,
-  Beaker,
-  Combine,
-  Workflow
-} from 'lucide-react';
-
-interface SidebarItemProps {
-  icon: React.ReactNode;
-  title: string;
-  path: string;
-  isActive?: boolean;
-}
-
-interface SidebarItem {
-  id: string;
-  icon: React.ReactNode;
-  title: string;
-  path: string;
-}
-
-interface NestedSectionData {
-  id: string;
-  title: string;
-  items: SidebarItem[];
-}
-
-interface CategoryData {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-  items?: SidebarItem[];
-  nested?: NestedSectionData[];
-}
-
-interface FilteredSections {
-  [key: string]: boolean;
-}
+import { ChevronUp, ChevronDown, Search, MessageSquare, Database, FileDown, Brain,  Zap, Link as LinkIcon,  Settings, Edit, Globe, MapPin, User, ThumbsUp, Search as SearchIcon, Beaker, Combine, Workflow } from 'lucide-react';
+import { CategoryData, FilteredSections, SidebarItemProps } from '@/types/comps';
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ icon, title, path, isActive }) => {
   return (

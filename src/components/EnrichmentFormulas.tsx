@@ -2,92 +2,9 @@
 
 import React, { useState } from "react";
 import WorkflowStarter from "@/components/WorkflowStarter";
-import {
-  User,
-  Building,
-  Mail,
-  Link,
-  Phone,
-  FileSearch,
-  CheckCircle,
-  Share2,
-  MessageSquare,
-  AtSign,
-  ArrowLeft,
-  Zap,
-} from "lucide-react";
-
-// Formula type
-interface Formula {
-  id: number;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  credits: number;
-  node_id?: number;
-  details: {
-    usage: string;
-    inputParams: {
-      name: string;
-      fieldName?: string;
-      type: string;
-      required: boolean;
-      description: string;
-    }[];
-    outputParams: {
-      name: string;
-      fieldName?: string;
-      type: string;
-      description: string;
-    }[];
-    example: string;
-  };
-}
-
-// Card type for main category cards
-interface CategoryCard {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-  color?: string;
-}
-
-// API Info type
-interface ApiInfo {
-  title: string;
-  description: string;
-  endpoint: string;
-  method: string;
-  parameters: {
-    name: string;
-    type: string;
-    required: boolean;
-    description: string;
-  }[];
-  curl: string;
-  responses: {
-    code: string;
-    description: string;
-    example: string;
-  }[];
-}
-
-// Workflow Node type
-interface WorkflowNode {
-  node_id: number;
-  name: string;
-  desc: string;
-  options: {
-    id: string;
-    name: string;
-    inputs: {
-      label: string;
-      placeholder: string;
-      type?: string;
-      options?: string[];
-    }[];
-  }[];
-}
+import { User, Building, Mail, Link, Phone, FileSearch, CheckCircle, Share2, MessageSquare, AtSign, ArrowLeft, Zap } from "lucide-react";
+import { CategoryCard, EnWorkflowNode, Formula } from "@/types/comps";
+import { ApiInfo } from "@/types/workflow";
 
 const EnrichmentFormulas = () => {
   // State for active tab, selected category, formula list, and selected formula
@@ -101,7 +18,7 @@ const EnrichmentFormulas = () => {
     "categories"
   );
 
-  console.log({selectedCategory})
+  console.log({ selectedCategory });
 
   // Personal Info cards
   const personalCards: CategoryCard[] = [
@@ -395,8 +312,8 @@ const EnrichmentFormulas = () => {
   });
 
   // Sample workflow nodes and API info for the selected formula
-  const getWorkflowNodes = (formula: Formula): WorkflowNode[] => {
-    console.log({formula})
+  const getWorkflowNodes = (formula: Formula): EnWorkflowNode[] => {
+    console.log({ formula });
     return [
       {
         node_id: 1,
@@ -633,7 +550,11 @@ const EnrichmentFormulas = () => {
     const apiInfo = getApiInfo(selectedFormula);
 
     return (
-      <WorkflowStarter apiInfo={apiInfo} nodes={nodes} handleBackClick={handleBackClick}/>
+      <WorkflowStarter
+        apiInfo={apiInfo}
+        nodes={nodes}
+        handleBackClick={handleBackClick}
+      />
     );
   };
 

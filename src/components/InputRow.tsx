@@ -1,17 +1,7 @@
 "use client";
-
 import React from 'react';
 import { X } from 'lucide-react';
-import { InputField } from '@/types/workflow';
-
-interface InputRowProps {
-  input: InputField;
-  value: string;
-  index: number;
-  onChange: (value: string) => void;
-  onRemove: () => void;
-  canRemove: boolean;
-}
+import { InputRowProps } from '@/types/comps';
 
 const InputRow: React.FC<InputRowProps> = ({
   input,
