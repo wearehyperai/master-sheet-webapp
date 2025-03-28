@@ -41,17 +41,19 @@ export class WebSocketService extends EventEmitter {
         if (this.socket) return;
         this.userId = userId;
 
-        console.log('Connecting to server ' + userId);
+        console.log('Connecting to server ' + userId + ' ' + process.env.CERT);
         this.socket = io(serverURL, {
             autoConnect: true,
-            transports: ['websocket'],
+            transports: ['websocket', 'polling'],
             reconnection: true,
             reconnectionAttempts: 5,
             reconnectionDelay: 5000,
             timeout: 1200000,
+            withCredentials: true,
             query: {
                 userId: this.userId,
             },
+            rejectUnauthorized: false
         });
 
         this.socket.on('connect', () => {
@@ -73,12 +75,12 @@ export class WebSocketService extends EventEmitter {
 
 
         this.socket.on("error", (error) => {
+            console.log("Error from WebSocket server " + JSON.stringify(error));
             this.updateConnectionState(false);
-            console.log("Error from WebSocket server " + error);
         });
 
         this.socket.on("connect_error", (error) => {
-            console.log("connect_error  " + error.message);
+            console.log("connect_error  " + JSON.stringify(error));
         });
 
         this.socket.on(SocketReceiveEvents.userData, (data) => {
@@ -125,6 +127,47 @@ export class WebSocketService extends EventEmitter {
             console.log(`SocketReceiveEvents.linkedInResponse : ${data}`);
             this.emit(SocketReceiveEvents.linkedInResponse, data);
         });
+
+        this.socket.on(SocketReceiveEvents.linkedInPersonDataResponse, (data) => {
+            console.log(`SocketReceiveEvents.linkedInPersonDataResponse : ${data}`);
+            this.emit(SocketReceiveEvents.linkedInPersonDataResponse, data);
+        });
+
+        this.socket.on(SocketReceiveEvents.linkedInPersonDataUrnResponse, (data) => {
+            console.log(`SocketReceiveEvents.linkedInPersonDataUrnResponse : ${data}`);
+            this.emit(SocketReceiveEvents.linkedInPersonDataUrnResponse, data);
+        });
+
+        this.socket.on(SocketReceiveEvents.linkedInSearchScraperResponse, (data) => {
+            console.log(`SocketReceiveEvents.linkedInSearchScraperResponse : ${data}`);
+            this.emit(SocketReceiveEvents.linkedInSearchScraperResponse, data);
+        });
+
+        this.socket.on(SocketReceiveEvents.linkedInCompanyDataResponse, (data) => {
+            console.log(`SocketReceiveEvents.linkedInCompanyDataResponse : ${data}`);
+            this.emit(SocketReceiveEvents.linkedInCompanyDataResponse, data);
+        });
+
+        this.socket.on(SocketReceiveEvents.linkedInSearchPostResponse, (data) => {
+            console.log(`SocketReceiveEvents.linkedInSearchPostResponse : ${data}`);
+            this.emit(SocketReceiveEvents.linkedInSearchPostResponse, data);
+        });
+
+        this.socket.on(SocketReceiveEvents.linkedInPostDataResponse, (data) => {
+            console.log(`SocketReceiveEvents.linkedInPostDataResponse : ${data}`);
+            this.emit(SocketReceiveEvents.linkedInPostDataResponse, data);
+        });
+
+        this.socket.on(SocketReceiveEvents.linkedInProfileScraperResponse, (data) => {
+            console.log(`SocketReceiveEvents.linkedInProfileScraperResponse : ${data}`);
+            this.emit(SocketReceiveEvents.linkedInProfileScraperResponse, data);
+        });
+
+        this.socket.on(SocketReceiveEvents.socketErrorCode, (data) => {
+            console.log(`SocketReceiveEvents.socketErrorCode : ${data}`);
+            this.emit(SocketReceiveEvents.socketErrorCode, data);
+        });
+
     }
 
 
@@ -182,6 +225,55 @@ export class WebSocketService extends EventEmitter {
         }
 
         this.socket.emit(SocketSendEvents.linkedInSearchAPICall, [recordData, responseFields, userUploadsId]);
+    }
+
+    public async runLinkedInPersonDataAPI(recordData: RecordData[], responseFields: string[], userUploadsId: string) {
+        if (!this.isConnected || !this.socket) {
+            return;
+        }
+        this.socket.emit(SocketSendEvents.linkedInPersonDataAPICall, [recordData, responseFields, userUploadsId]);
+    }
+
+    public async runLinkedInPersonDataUrnAPI(recordData: RecordData[], responseFields: string[], userUploadsId: string) {
+        if (!this.isConnected || !this.socket) {
+            return;
+        }
+        this.socket.emit(SocketSendEvents.linkedInPersonDataUrnAPICall, [recordData, responseFields, userUploadsId]);
+    }
+
+    public async runLinkedInSearchScraperAPI(recordData: RecordData[], responseFields: string[], userUploadsId: string) {
+        if (!this.isConnected || !this.socket) {
+            return;
+        }
+        this.socket.emit(SocketSendEvents.linkedInSearchScraperAPICall, [recordData, responseFields, userUploadsId]);
+    }
+
+    public async runLinkedInCompanyDataAPI(recordData: RecordData[], responseFields: string[], userUploadsId: string) {
+        if (!this.isConnected || !this.socket) {
+            return;
+        }
+        this.socket.emit(SocketSendEvents.linkedInCompanyDataAPICall, [recordData, responseFields, userUploadsId]);
+    }
+
+    public async runLinkedInProfileScraperAPI(recordData: RecordData[], responseFields: string[], userUploadsId: string) {
+        if (!this.isConnected || !this.socket) {
+            return;
+        }
+        this.socket.emit(SocketSendEvents.linkedInProfileScraperAPICall, [recordData, responseFields, userUploadsId]);
+    }
+
+    public async runLinkedInSearchPostAPI(recordData: RecordData[], responseFields: string[], userUploadsId: string) {
+        if (!this.isConnected || !this.socket) {
+            return;
+        }
+        this.socket.emit(SocketSendEvents.linkedInSearchPostAPICall, [recordData, responseFields, userUploadsId]);
+    }
+
+    public async runLinkedInPostDataAPI(recordData: RecordData[], responseFields: string[], userUploadsId: string) {
+        if (!this.isConnected || !this.socket) {
+            return;
+        }
+        this.socket.emit(SocketSendEvents.linkedInPostDataAPICall, [recordData, responseFields, userUploadsId]);
     }
 
     public async askForData(uploadId: string) {

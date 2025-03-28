@@ -135,82 +135,57 @@ function DataPageContent() {
     useEffect(() => {
         if (nameResponseData) {
             const newDataChunk: CSVDataList = JSON.parse(nameResponseData);
-            const chunkId = newDataChunk.id ?? 0;
-
-            const chunkSize = newDataChunk.data.length;
-            const startIndex = chunkId * chunkSize;
-
-            console.log(`Processing chunk ${chunkId} (records ${startIndex} to ${startIndex + chunkSize - 1})`);
-            if (!newDataChunk.loadingData) {
-                setProcessedData(processedData + chunkSize);
-            }
-            setRecordData(prevData => {
-                const updatedData = [...prevData];
-
-                newDataChunk.data.forEach((item, index) => {
-                    const arrayIndex = startIndex + index;
-
-                    if (arrayIndex >= updatedData.length) return;
-
-                    updatedData[arrayIndex] = {
-                        keyValuePairs: {
-                            ...updatedData[arrayIndex].keyValuePairs,
-                        }
-                    };
-                    if (responseFields.includes('full_name')) {
-                        updatedData[arrayIndex].keyValuePairs['FullName'] = item.keyValuePairs['full_name'] || '';
-                    }
-                    if (responseFields.includes('initials')) {
-                        updatedData[arrayIndex].keyValuePairs['initials'] = item.keyValuePairs['initials'] || '';
-                    }
-                });
-
-                setTimeout(() => {
-                    clearEventData(SocketReceiveEvents.nameAPIResponse);
-                }, 500);
-                return updatedData;
-            });
+            handleApiResponse(newDataChunk, responseFields, SocketReceiveEvents.nameAPIResponse);
         }
     }, [nameResponseData, clearEventData, processedData, responseFields]);
 
     useEffect(() => {
         if (linkedInResponseData) {
             const newDataChunk: CSVDataList = JSON.parse(linkedInResponseData);
-
-            const chunkId = newDataChunk.id ?? 0;
-            const chunkSize = newDataChunk.data.length;
-            const startIndex = chunkId * chunkSize;
-
-            setRecordData(prevData => {
-                const updatedData = [...prevData];
-
-                newDataChunk.data.forEach((item, index) => {
-                    const arrayIndex = startIndex + index;
-
-                    if (arrayIndex >= updatedData.length) return;
-
-                    updatedData[arrayIndex] = {
-                        keyValuePairs: {
-                            ...updatedData[arrayIndex].keyValuePairs,
-                            'owner_name': item.keyValuePairs.owner_name,
-                            'owner_linkedin': item.keyValuePairs.owner_linkedin,
-                            'founder_name': item.keyValuePairs.founder_name,
-                            'founder_linkedin': item.keyValuePairs.founder_linkedin,
-                            'ceo_name': item.keyValuePairs.ceo_name,
-                            'ceo_linkedin': item.keyValuePairs.ceo_linkedin,
-                            'president_name': item.keyValuePairs.president_name,
-                            'president_linkedin': item.keyValuePairs.president_linkedin,
-                        }
-                    };
-                });
-
-                setTimeout(() => {
-                    clearEventData(SocketReceiveEvents.nameAPIResponse);
-                }, 500);
-                return updatedData;
-            });
+            handleApiResponse(newDataChunk, responseFields, SocketReceiveEvents.linkedInResponse);
         }
     }, [linkedInResponseData, clearEventData]);
+
+    const handleApiResponse = (
+        newDataChunk: CSVDataList,
+        responseFields: string[],
+        eventType: SocketReceiveEvents,
+    ) => {
+        const chunkId = newDataChunk.id ?? 0;
+        const chunkSize = newDataChunk.data.length;
+        const startIndex = chunkId * chunkSize;
+        if (!newDataChunk.loadingData) {
+            setProcessedData(processedData + chunkSize);
+        }
+
+        setRecordData(prevData => {
+            const updatedData = [...prevData];
+
+            newDataChunk.data.forEach((item, index) => {
+                const arrayIndex = startIndex + index;
+
+                if (arrayIndex >= updatedData.length) return;
+
+                const newDataPairs: Record<string, string> = {};
+                for (let index = 0; index < responseFields.length; index++) {
+                    const element = responseFields[index];
+                    newDataPairs[element] = item.keyValuePairs[element];
+                }
+
+                updatedData[arrayIndex] = {
+                    keyValuePairs: {
+                        ...updatedData[arrayIndex].keyValuePairs,
+                        ...newDataPairs
+                    }
+                };
+            });
+
+            setTimeout(() => {
+                clearEventData(eventType);
+            }, 500);
+            return updatedData;
+        });
+    }
 
     const handleRunApi = (
         apiId: string,
